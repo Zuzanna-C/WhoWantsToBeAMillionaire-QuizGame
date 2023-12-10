@@ -16,9 +16,6 @@ public class StartingForm {
 
 	private JFrame frame;
 
-	/**
-	 * Launch the application.
-	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -32,16 +29,11 @@ public class StartingForm {
 		});
 	}
 
-	/**
-	 * Create the application.
-	 */
 	public StartingForm() {
 		initialize();
+		QuestionDatabase questions = new QuestionDatabase();
 	}
-
-	/**
-	 * Initialize the contents of the frame.
-	 */
+	
 	private void initialize() {
 		frame = new JFrame();
 		frame.setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\Zuzia\\Pictures\\Screenshots\\millioners.png"));

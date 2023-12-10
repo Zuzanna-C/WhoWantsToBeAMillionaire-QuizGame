@@ -19,7 +19,7 @@ public class ChatGPT {
 	
 	private static Logger logger = LogManager.getLogger(ChatGPT.class.getName());
 	private static final String chatgpt_url = "https://api.openai.com/v1/chat/completions";
-	private static final String apiKey = "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";
+	private static final String apiKey = "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";
 	private static final String chatgpt_model = "gpt-3.5-turbo";	
 	
 	public static Questions getQuestions() throws IOException, URISyntaxException {

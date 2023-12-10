@@ -70,13 +70,26 @@ public class CheckAnswer {
         }
 		
 		String extractedAward = "";
-		if (playerScore == 0) {
-			extractedAward = "0zl";		
-		}
-		else {
-			extractedAward = getAward(label[playerScore - 1]);					
-		}
 		
+		switch (playerScore) {
+		case 0:
+			extractedAward = "0zl";
+			break;
+		case 1:
+			extractedAward = getAward(label[playerScore - 1]);
+			break;
+		case 2,3,4,5,6:
+			extractedAward = getAward(label[1]);
+			break;
+		case 7,8,9,10,11:
+			extractedAward = getAward(label[6]);
+			break;
+		case 12:
+			extractedAward = getAward(label[11]);
+			break;
+		}
+			
+		QuestionDatabase.regenerateQuestions();
 		EndView form = new EndView(extractedAward);
 		form.setVisible(true);
 		frame.dispose();

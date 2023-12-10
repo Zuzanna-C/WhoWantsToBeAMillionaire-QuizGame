@@ -30,6 +30,13 @@ public class NewGame {
 	private int correctAnswer = 0;
 	private CheckAnswer check = new CheckAnswer();
 	
+	JButton bA = new JButton("A:");
+	JButton bB = new JButton("B:");
+	JButton bC = new JButton("C:");
+	JButton bD = new JButton("D:");
+	
+	JLabel lQuestion = new JLabel("");
+	
 	/**
 	 * Launch the application.
 	 */
@@ -51,6 +58,7 @@ public class NewGame {
 	 */
 	public NewGame() {
 		initialize();
+		correctAnswer = check.showQuestion(bA, bB, bC, bD, lQuestion);
 	}
 
 	/**
@@ -68,7 +76,6 @@ public class NewGame {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		frame.setLocation(screenSize.width/2-frame.getSize().width/2, screenSize.height/2-frame.getSize().height/2);
 		
-		JLabel lQuestion = new JLabel("Ile to 2 + 2?");
 		lQuestion.setForeground(new Color(240, 255, 255));
 		lQuestion.setFont(new Font("Source Serif Pro", Font.PLAIN, 12));
 		lQuestion.setBounds(29, 158, 419, 44);
@@ -206,10 +213,6 @@ public class NewGame {
 		setImage(bPublicity, "publicity");
 		bPublicity.setFocusPainted(false);
 		
-		JButton bA = new JButton("A: 4");
-		JButton bB = new JButton("B: 22");
-		JButton bC = new JButton("C: 5");
-		JButton bD = new JButton("D: błąd w zapisie");
 		
 		bA.setName("bA");
 		bA.addActionListener(new ActionListener() {
@@ -217,7 +220,12 @@ public class NewGame {
 				ChangingColors coloring = new ChangingColors();
 				
 				if (check.checkIfRightAnswer(bA, correctAnswer)) {
-					playerScore++;								
+					playerScore++;	
+					
+					if (playerScore == 12) {
+						check.badAnswer(frame, labels, playerScore);
+					}
+					
 					coloring.changeLabelColorGreen(labels[playerScore - 1]);
 					correctAnswer = check.showQuestion(bA, bB, bC, bD, lQuestion);
 				}
@@ -371,5 +379,4 @@ public class NewGame {
             button.removeActionListener(al);
         }
     }
-
 }
