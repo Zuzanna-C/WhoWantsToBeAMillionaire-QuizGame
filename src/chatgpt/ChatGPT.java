@@ -19,7 +19,7 @@ public class ChatGPT {
 	
 	private static Logger logger = LogManager.getLogger(ChatGPT.class.getName());
 	private static final String chatgpt_url = "https://api.openai.com/v1/chat/completions";
-	private static final String apiKey = "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";
+	private static final String apiKey = "APIKEY";
 	private static final String chatgpt_model = "gpt-3.5-turbo";	
 	
 	public static Questions getQuestions() throws IOException, URISyntaxException {
@@ -72,6 +72,9 @@ public class ChatGPT {
 
 		} catch (IOException e) {
 			logger.error(e);
+			if (e.getMessage().hashCode() == "Server returned HTTP response code: 401 for URL: https://api.openai.com/v1/chat/completions".hashCode()) {
+				logger.error("apikey is not correct");
+			}
 			throw e;
 		}
 	}
