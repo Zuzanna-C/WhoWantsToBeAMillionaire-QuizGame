@@ -19,8 +19,8 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import javax.swing.UIManager;
 
+import backend.ChangingColors;
 import backend.CheckAnswer;
-import frontend.ChangingColors;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;

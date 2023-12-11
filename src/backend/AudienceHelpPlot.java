@@ -28,12 +28,12 @@ public class AudienceHelpPlot {
 		frame.setVisible(true);
 	}
 	
-	public static void createPlot4Answers(ArrayList<Integer> answersSet) {
+	public static void createPlot4Answers(ArrayList<Integer> answerIndexFlags) {
 		if(ThreadLocalRandom.current().nextInt(0, 101) > 95) {
 			int newOne;
-			do {} while ((newOne = ThreadLocalRandom.current().nextInt(0, 4)) == answersSet.indexOf(1)); 
-			answersSet.set(answersSet.indexOf(1), -1);
-			answersSet.set(newOne, 1);
+			do {} while ((newOne = ThreadLocalRandom.current().nextInt(0, 4)) == answerIndexFlags.indexOf(1)); 
+			answerIndexFlags.set(answerIndexFlags.indexOf(1), -1);
+			answerIndexFlags.set(newOne, 1);
 		}
 		int correctValue = ThreadLocalRandom.current().nextInt(26, 76);
 		int[] incorrect = new int[3];
@@ -44,8 +44,8 @@ public class AudienceHelpPlot {
 		} while((incorrect[2] = 100 - correctValue - incorrect[0] - incorrect[1]) >= correctValue);
 		
 		int[] values = new int[4];
-		for (int i = 0, j =0; i < answersSet.size(); i++) {
-			if (answersSet.get(i) == 1) values[i] = correctValue;
+		for (int i = 0, j =0; i < answerIndexFlags.size(); i++) {
+			if (answerIndexFlags.get(i) == 1) values[i] = correctValue;
 			else {
 				values[i] = incorrect[j];
 				j++;
@@ -54,23 +54,23 @@ public class AudienceHelpPlot {
 		Plot(values);
 	}
 	
-	public static void createPlot2Answers(ArrayList<Integer> answersSet) {
+	public static void createPlot2Answers(ArrayList<Integer> answerIndexFlags) {
 		if(ThreadLocalRandom.current().nextInt(0, 101) > 95) {
-			//-1 incorrect, 1 correct, 0 none, ABCD
-			int temp = answersSet.indexOf(-1);
-			answersSet.set(answersSet.indexOf(1), -1);
-			answersSet.set(temp, 1);
+			int temp = answerIndexFlags.indexOf(-1);
+			answerIndexFlags.set(answerIndexFlags.indexOf(1), -1);
+			answerIndexFlags.set(temp, 1);
 		}
 		
 		int correctValue = ThreadLocalRandom.current().nextInt(51, 96);
 		int incorrect = 100 - correctValue;
 		
 		int[] values = new int[4];
-		for (int i = 0; i < answersSet.size(); i++) {
-			if (answersSet.get(i) == 0) values[i] = 0;
-			else if (answersSet.get(i) == 1) values[i] = correctValue;
+		for (int i = 0; i < answerIndexFlags.size(); i++) {
+			if (answerIndexFlags.get(i) == 0) values[i] = 0;
+			else if (answerIndexFlags.get(i) == 1) values[i] = correctValue;
 			else values[i] = incorrect;
 		}
 		Plot(values);
 	}
+	
 }

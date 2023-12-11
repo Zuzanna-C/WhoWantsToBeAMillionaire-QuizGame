@@ -40,9 +40,10 @@ public class CheckAnswer {
 		return false;
 	}
 	
+	// DO ZMIANY inna rola konstruktora bezparametrowego ORAZ brak bloku statycznego 
 	public int showQuestion(JButton btnA, JButton btnB, JButton btnC, JButton btnD, JLabel label1) {
-		QuestionDatabase obj = new QuestionDatabase();
-		QuestionModel question = obj.getQuestion();
+		QuestionDatabase obj = new QuestionDatabase(); 
+		QuestionModel question = obj.getQuestion(); // JAK TO DZIALA? aa przez blok statyczny juz go nie ma
 		
 		label1.setText(question.getQuestionText());
 		
@@ -65,6 +66,7 @@ public class CheckAnswer {
         return "";
 	}
 	
+	// DO ZMIANY generacja pytań
 	public void badAnswer(JFrame frame, JLabel[] label, int playerScore){
 		
 		try {

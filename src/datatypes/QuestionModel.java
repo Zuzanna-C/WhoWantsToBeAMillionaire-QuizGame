@@ -1,16 +1,22 @@
 package datatypes;
-import java.util.Random;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class QuestionModel {
-
+	
 	private String questionText;
     private String[] answerOptions;
-    private int correctAnswerIndex;
+    private ArrayList<Integer> answerIndexFlags = new ArrayList<Integer>(Arrays.asList(1,-1,-1,-1)); //-1 incorrect, 1 correct, 0 brak, ABCD
 
-    public QuestionModel(String questionText, String[] answerOptions, int correctAnswerIndex) {
-        this.questionText = questionText;
+    public QuestionModel(String questionText, String[] answerOptions) {
+    	this.questionText = questionText;
         this.answerOptions = answerOptions;
-        this.correctAnswerIndex = correctAnswerIndex;
+    }
+    
+    public QuestionModel(String questionText, String[] answerOptions, ArrayList<Integer> answerIndexFlags) {
+        this(questionText, answerOptions);
+        this.answerIndexFlags = answerIndexFlags;
     }
 
     public String getQuestionText() {
@@ -22,7 +28,7 @@ public class QuestionModel {
     }
 
     public int getCorrectAnswerIndex() {
-        return correctAnswerIndex;
+        return answerIndexFlags.indexOf(1);
     }
 
 }
