@@ -12,7 +12,7 @@
 				pattern="%d %-5level %logger{36}.%-5M %msg%n" />
 		</Console>
 		
-		<File name="chatgptlog" fileName="${path}/chatgpt.log">
+		<File name="backendLOG" fileName="${path}/backend.log">
 			<PatternLayout>
 				<pattern>%d %-5level %logger{36}.%-5M %msg%n</pattern>
 			</PatternLayout>
@@ -20,9 +20,9 @@
 	</Appenders>
 
 	<Loggers>
-		<!--For package chatgpt-->
-		<Logger name="chatgpt" level="info" additivity="false">
-			<AppenderRef ref="chatgptlog"/>
+		<!--For package backend-->
+		<Logger name="backedn" level="info" additivity="false">
+			<AppenderRef ref="backendLOG"/>
 			
 		</Logger>
 
