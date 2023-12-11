@@ -1,0 +1,7 @@
+# ignore Files
+src/backend/ChatGPT.java
+.classpath
+
+# ignore Folders
+bin/
+logs/
