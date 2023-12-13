@@ -15,18 +15,16 @@ import datatypes.QuestionDatabase;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-
-
 public class ChatGPT {
 	
 	private static Logger logger = LogManager.getLogger(ChatGPT.class.getName());
 	private static final String chatgpt_url = "https://api.openai.com/v1/chat/completions";
-	private static final String apiKey = "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";
+	private static final String apiKey = "apikey";
 	private static final String chatgpt_model = "gpt-3.5-turbo";	
 	
 	public static QuestionDatabase getQuestionDatabase() throws IOException, URISyntaxException {
 		
-		String request = "Wygeneruj 12 pytań do teleturnieju Milionerzy każde kolejne pytanie powinno być na poziomie trudniejsze średnim i dotyczyć wiedzy ogólnej. Do każdego pytania wygeneruj krótką maks 5 słów poprawną odpowiedź i 3 też maks 5 słów błędne odpowiedzi. "
+		String request = "Wygeneruj 13 pytań do teleturnieju Milionerzy każde kolejne pytanie powinno być na poziomie trudniejsze średnim i dotyczyć wiedzy ogólnej. Do każdego pytania wygeneruj krótką maks 3 słów poprawną odpowiedź i 3 też maks 3 słów błędne odpowiedzi. "
 				+ "Danie przedstaw w podanej formie: " + "Pytanie_1: treść " + "Odp_A: treść " + "Odp_B: treść "
 				+ "Odp_C: treść " + "Odp_D: treść " + "Odp_A ma zawierać poprawną odpowiedź na pytanie. "
 				+ "Pomiędzy kolejnymi pytaniami dawaj enter. "
@@ -93,7 +91,8 @@ public class ChatGPT {
 			if (i<12) answers[3] = response.substring(response.indexOf("Odp_D: ", response.indexOf("Pytanie_" + i + ": ")) + "Odp_D: ".length(), response.indexOf("Pytanie_" + (i+1) + ": ", response.indexOf("Odp_D: ", response.indexOf("Pytanie_" + i + ": ")) + "Odp_D: ".length()) - 4).replace("\\", ""); // because \n\n
 			else answers[3] = response.substring(response.indexOf("Odp_D: ", response.indexOf("Pytanie_" + i + ": ")) + "Odp_D: ".length(), response.indexOf("finish_reason", response.indexOf("Odp_D: ") + "Odp_D: ".length()) - 16).replace("\\", ""); // because "      },      "
 			
-			questions.setQuestionModel(i-1, new QuestionModel(questionText, answers));
+			questions.addQuestionModel((new QuestionModel(questionText, answers)).shuffleAnswerOptions());
+			System.out.println(questionText);
 			logger.info("Added Question " + i);
 		}
 		
