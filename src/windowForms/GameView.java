@@ -9,7 +9,8 @@ import javax.swing.JFrame;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.concurrent.TimeUnit;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
@@ -20,7 +21,9 @@ import java.awt.Toolkit;
 import javax.swing.UIManager;
 
 import backend.ChangingColors;
+import backend.ChatGPT;
 import backend.CheckAnswer;
+import datatypes.QuestionDatabase;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -34,6 +37,7 @@ public class GameView {
 	private JButton[] btns = new JButton[4];
 	private int correctAnswer = 0;
 	private CheckAnswer check = new CheckAnswer();
+	private QuestionDatabase questions;
 	
 	JButton bA = new JButton("A:");
 	JButton bB = new JButton("B:");
@@ -62,8 +66,22 @@ public class GameView {
 	 * Create the application.
 	 */
 	public GameView() {
+
+		// OBSLUGA BLEDOW
+		
+		try {
+			questions = ChatGPT.getQuestionDatabase();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.exit(-1);
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.exit(-1);
+		}
 		initialize();
-		correctAnswer = check.showQuestion(bA, bB, bC, bD, lQuestion);
+		correctAnswer = check.showQuestion(questions, playerScore, bA, bB, bC, bD, lQuestion);
 	}
 
 	/**
@@ -190,7 +208,7 @@ public class GameView {
 		JButton bChangeQuestion = new JButton("");
 		bChangeQuestion.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				check.showQuestion(btns[0], btns[1], btns[2], btns[3], lQuestion);
+				check.showQuestion(questions, playerScore, btns[0], btns[1], btns[2], btns[3], lQuestion);
 				setImage(bChangeQuestion, "switchUsed");
 				setButtonUnclickable(bChangeQuestion);
 			}
@@ -232,7 +250,7 @@ public class GameView {
 					}
 					
 					coloring.changeLabelColorGreen(labels[playerScore - 1]);
-					correctAnswer = check.showQuestion(bA, bB, bC, bD, lQuestion);
+					correctAnswer = check.showQuestion(questions, playerScore, bA, bB, bC, bD, lQuestion);
 				}
 				else {
 					coloring.changeLabelColorRed(labels[playerScore]);
@@ -259,7 +277,7 @@ public class GameView {
 				if (correctAnswer == 1) {
 					playerScore++;								
 					coloring.changeLabelColorGreen(labels[playerScore - 1]);
-					correctAnswer = check.showQuestion(bA, bB, bC, bD, lQuestion);
+					correctAnswer = check.showQuestion(questions, playerScore, bA, bB, bC, bD, lQuestion);
 				}
 				else if (correctAnswer != 1){
 					coloring.changeLabelColorRed(labels[playerScore]);
@@ -286,7 +304,7 @@ public class GameView {
 				if (correctAnswer == 2) {
 					playerScore++;								
 					coloring.changeLabelColorGreen(labels[playerScore - 1]);
-					correctAnswer = check.showQuestion(bA, bB, bC, bD, lQuestion);
+					correctAnswer = check.showQuestion(questions, playerScore, bA, bB, bC, bD, lQuestion);
 				}
 				else if (correctAnswer != 2){
 					coloring.changeLabelColorRed(labels[playerScore]);
@@ -312,7 +330,7 @@ public class GameView {
 				if (correctAnswer == 3) {
 					playerScore++;								
 					coloring.changeLabelColorGreen(labels[playerScore - 1]);
-					correctAnswer = check.showQuestion(bA, bB, bC, bD, lQuestion);
+					correctAnswer = check.showQuestion(questions, playerScore, bA, bB, bC, bD, lQuestion);
 				}
 				else if (correctAnswer != 3){
 					coloring.changeLabelColorRed(labels[playerScore]);

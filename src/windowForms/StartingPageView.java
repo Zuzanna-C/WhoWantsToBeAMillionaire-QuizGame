@@ -2,13 +2,15 @@ package windowForms;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
-import java.awt.FlowLayout;
 import javax.swing.JLabel;
 
+import backend.ChatGPT;
 import datatypes.QuestionDatabase;
 
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -19,6 +21,7 @@ import javax.swing.ImageIcon;
 public class StartingPageView {
 
 	private JFrame frame;
+	private QuestionDatabase questions;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -35,7 +38,6 @@ public class StartingPageView {
 
 	public StartingPageView() {
 		initialize();
-		QuestionDatabase questions = new QuestionDatabase();
 	}
 	
 	private void initialize() {
