@@ -4,46 +4,28 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import datatypes.QuestionModel;
+import datatypes.QuestionDatabase;
 import windowForms.EndView;
 
 public class CheckAnswer {
-
-	public static void main(String[] args) {
-
-	}
 	
 	public boolean checkIfRightAnswer(JButton btn, int answerIndex){
-		switch (btn.getName()) {
+		return switch (btn.getName()) {
 		case "bA":
-			if (answerIndex == 0) {
-				return true;
-			}
-			break;
+			if(answerIndex == 0) yield true;
 		case "bB":
-			if (answerIndex == 1) {
-				return true;
-			}
-			break;
+			if(answerIndex == 1) yield true;
 		case "bC":
-			if (answerIndex == 2) {
-				return true;
-			}
-			break;
+			if(answerIndex == 2) yield true;
 		case "bD":
-			if (answerIndex == 3) {
-				return true;
-			}
-			break;
+			if(answerIndex == 3) yield true;
 		default:
-			return false;
-		}
-		return false;
+			yield false;
+		};
 	}
 	
-	// DO ZMIANY inna rola konstruktora bezparametrowego ORAZ brak bloku statycznego 
-	public int showQuestion(JButton btnA, JButton btnB, JButton btnC, JButton btnD, JLabel label1) {
-		QuestionDatabase obj = new QuestionDatabase(); 
-		QuestionModel question = obj.getQuestion(); // JAK TO DZIALA? aa przez blok statyczny juz go nie ma
+	public int showQuestion(QuestionDatabase questionDatabase, int questionNumber, JButton btnA, JButton btnB, JButton btnC, JButton btnD, JLabel label1) {
+		QuestionModel question = questionDatabase.getQuestionModel(questionNumber);
 		
 		label1.setText(question.getQuestionText());
 		
@@ -66,7 +48,6 @@ public class CheckAnswer {
         return "";
 	}
 	
-	// DO ZMIANY generacja pytań
 	public void badAnswer(JFrame frame, JLabel[] label, int playerScore){
 		
 		try {
@@ -95,7 +76,6 @@ public class CheckAnswer {
 			break;
 		}
 			
-		QuestionDatabase.regenerateQuestions();
 		EndView form = new EndView(extractedAward);
 		form.setVisible(true);
 		frame.dispose();
