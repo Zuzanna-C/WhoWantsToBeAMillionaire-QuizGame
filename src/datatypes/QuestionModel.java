@@ -2,8 +2,14 @@ package datatypes;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 public class QuestionModel {
+	
+	public int A=0;
+	public int B=1;
+	public int C=2;
+	public int D=3;
 	
 	private String questionText;
     private String[] answerOptions;
@@ -23,6 +29,10 @@ public class QuestionModel {
         return questionText;
     }
 
+    public ArrayList<Integer> getAnswerIndexFlags() {
+		return answerIndexFlags;
+	}
+    
     public String[] getAnswerOptions() {
         return answerOptions;
     }
@@ -30,5 +40,15 @@ public class QuestionModel {
     public int getCorrectAnswerIndex() {
         return answerIndexFlags.indexOf(1);
     }
-
+    
+    public QuestionModel shuffleAnswerOptions() {
+        if ((new Random()).nextInt(101) <= 25) return this;
+        int index = (new Random()).nextInt(4);
+        String temp = answerOptions[A];
+        answerOptions[A] = answerOptions[index];
+        answerIndexFlags.set(A, answerIndexFlags.get(index));
+        answerOptions[index] = temp;
+        answerIndexFlags.set(index, 1);
+        return this;
+    }
 }
