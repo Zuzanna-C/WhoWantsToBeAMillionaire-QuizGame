@@ -33,6 +33,10 @@ public class QuestionModel {
 		return answerIndexFlags;
 	}
     
+    public void setAnswerIndexFlag(int index, int num){
+    	answerIndexFlags.set(index, num);
+    }
+    
     public String[] getAnswerOptions() {
         return answerOptions;
     }
@@ -42,8 +46,9 @@ public class QuestionModel {
     }
     
     public QuestionModel shuffleAnswerOptions() {
-        if ((new Random()).nextInt(101) <= 25) return this;
-        int index = (new Random()).nextInt(4);
+        Random r = new Random();
+    	if (r.nextInt(101) <= 25) return this;
+        int index = r.nextInt(4);
         String temp = answerOptions[A];
         answerOptions[A] = answerOptions[index];
         answerIndexFlags.set(A, answerIndexFlags.get(index));

@@ -20,6 +20,7 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import javax.swing.UIManager;
 
+import backend.AudienceHelpPlot;
 import backend.ChangingColors;
 import backend.ChatGPT;
 import backend.CheckAnswer;
@@ -89,7 +90,7 @@ public class GameView {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\Zuzia\\Pictures\\Screenshots\\millioners.png"));
+		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(".\\resources\\millioners.png"));
 		frame.setTitle("Who wants to be a Millionare");
 		frame.getContentPane().setBackground(new Color(245, 245, 245));
 		frame.setBounds(100, 100, 632, 391);
@@ -221,9 +222,11 @@ public class GameView {
 		JButton bPublicity = new JButton("");
 		bPublicity.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				System.out.print(b5050.getActionListeners().length == 0);
+				if (b5050.getActionListeners().length == 0) AudienceHelpPlot.createPlot2Answers(questions.getQuestionModel(playerScore).getAnswerIndexFlags()); 
+				else AudienceHelpPlot.createPlot4Answers(questions.getQuestionModel(playerScore).getAnswerIndexFlags());
 				setImage(bPublicity, "publicityUsed");
 				setButtonUnclickable(bPublicity);
-				
 			}
 		});
 		bChangeQuestion.setFocusPainted(false);
@@ -244,12 +247,11 @@ public class GameView {
 				
 				if (check.checkIfRightAnswer(bA, correctAnswer)) {
 					playerScore++;	
-					
+					coloring.changeLabelColorGreen(labels[playerScore - 1]);
 					if (playerScore == 12) {
 						check.badAnswer(frame, labels, playerScore);
+						return;
 					}
-					
-					coloring.changeLabelColorGreen(labels[playerScore - 1]);
 					correctAnswer = check.showQuestion(questions, playerScore, bA, bB, bC, bD, lQuestion);
 				}
 				else {
@@ -273,13 +275,18 @@ public class GameView {
 		bB.setName("bB");
 		bB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ChangingColors coloring = new ChangingColors();								
-				if (correctAnswer == 1) {
-					playerScore++;								
+				ChangingColors coloring = new ChangingColors();
+				
+				if (check.checkIfRightAnswer(bB, correctAnswer)) {
+					playerScore++;	
 					coloring.changeLabelColorGreen(labels[playerScore - 1]);
+					if (playerScore == 12) {
+						check.badAnswer(frame, labels, playerScore);
+						return;
+					}
 					correctAnswer = check.showQuestion(questions, playerScore, bA, bB, bC, bD, lQuestion);
 				}
-				else if (correctAnswer != 1){
+				else {
 					coloring.changeLabelColorRed(labels[playerScore]);
 					labels[playerScore].repaint();
 					coloring.showRightAnswer(correctAnswer, btns);
@@ -287,7 +294,7 @@ public class GameView {
 					SwingUtilities.invokeLater(() -> {
 					    check.badAnswer(frame, labels, playerScore);
 					});
-				}
+				}	
 			}
 		});
 		bB.setFont(new Font("Source Serif Pro", Font.PLAIN, 12));
@@ -300,13 +307,18 @@ public class GameView {
 		bC.setName("bC");
 		bC.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ChangingColors coloring = new ChangingColors();								
-				if (correctAnswer == 2) {
-					playerScore++;								
+				ChangingColors coloring = new ChangingColors();
+				
+				if (check.checkIfRightAnswer(bC, correctAnswer)) {
+					playerScore++;	
 					coloring.changeLabelColorGreen(labels[playerScore - 1]);
+					if (playerScore == 12) {
+						check.badAnswer(frame, labels, playerScore);
+						return;
+					}
 					correctAnswer = check.showQuestion(questions, playerScore, bA, bB, bC, bD, lQuestion);
 				}
-				else if (correctAnswer != 2){
+				else {
 					coloring.changeLabelColorRed(labels[playerScore]);
 					labels[playerScore].repaint();
 					coloring.showRightAnswer(correctAnswer, btns);
@@ -326,13 +338,18 @@ public class GameView {
 		bD.setName("bD");
 		bD.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ChangingColors coloring = new ChangingColors();								
-				if (correctAnswer == 3) {
-					playerScore++;								
+				ChangingColors coloring = new ChangingColors();
+				
+				if (check.checkIfRightAnswer(bC, correctAnswer)) {
+					playerScore++;	
 					coloring.changeLabelColorGreen(labels[playerScore - 1]);
+					if (playerScore == 12) {
+						check.badAnswer(frame, labels, playerScore);
+						return;
+					}
 					correctAnswer = check.showQuestion(questions, playerScore, bA, bB, bC, bD, lQuestion);
 				}
-				else if (correctAnswer != 3){
+				else {
 					coloring.changeLabelColorRed(labels[playerScore]);
 					labels[playerScore].repaint();
 					coloring.showRightAnswer(correctAnswer, btns);
@@ -355,7 +372,7 @@ public class GameView {
 		btns[3] = bD;
 		
 		JLabel lblNewLabel = new JLabel("");
-		lblNewLabel.setIcon(new ImageIcon("C:\\Users\\Zuzia\\Downloads\\background.jpg"));
+		lblNewLabel.setIcon(new ImageIcon(".\\resources\\background.png"));
 		lblNewLabel.setBounds(0, 0, 618, 354);
 		frame.getContentPane().add(lblNewLabel);
 		
@@ -366,7 +383,7 @@ public class GameView {
     }
 	
 	public void setImage(JButton button, String image) {
-		String filePath = "C:\\Users\\Zuzia\\Pictures\\Screenshots\\" + image + ".png";
+		String filePath = ".\\resources\\" + image + ".png";
 		ImageIcon imageIcon = new ImageIcon(new ImageIcon(filePath)
 				.getImage().getScaledInstance(button.getWidth(), button.getHeight(), Image.SCALE_DEFAULT));
 		button.setIcon(imageIcon);
@@ -386,6 +403,9 @@ public class GameView {
 		
 		int index1 = losujLiczbe(numList);
 		int index2 = losujLiczbe(numList);
+		
+		questions.getQuestionModel(playerScore).setAnswerIndexFlag(index1, 0);
+		questions.getQuestionModel(playerScore).setAnswerIndexFlag(index2, 0);
 		
 		btns[index1].setText("");
 		btns[index2].setText("");

@@ -42,7 +42,7 @@ public class StartingPageView {
 	
 	private void initialize() {
 		frame = new JFrame();
-		frame.setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\Zuzia\\Pictures\\Screenshots\\millioners.png"));
+		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(".\\resources\\millioners.png"));
 		frame.setBounds(100, 100, 402, 214);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
@@ -96,7 +96,7 @@ public class StartingPageView {
 		frame.getContentPane().add(lText);
 		
 		JLabel lblNewLabel = new JLabel("New label");
-		lblNewLabel.setIcon(new ImageIcon("C:\\Users\\Zuzia\\Downloads\\background.jpg"));
+		lblNewLabel.setIcon(new ImageIcon(".\\resources\\background.png"));
 		lblNewLabel.setBounds(0, 0, 388, 177);
 		frame.getContentPane().add(lblNewLabel);
 	}
