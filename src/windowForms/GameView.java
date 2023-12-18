@@ -1,6 +1,5 @@
 package windowForms;
 
-
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
@@ -24,7 +23,7 @@ import org.apache.logging.log4j.Logger;
 import backend.AudienceHelpPlot;
 import backend.ChangingColors;
 import backend.ChatGPT;
-import backend.CheckAnswer;
+//import backend.CheckAnswer;
 import datatypes.QuestionCategory;
 import datatypes.QuestionDatabase;
 import datatypes.QuestionModel;
@@ -48,13 +47,17 @@ public class GameView {
 	// GAME
 	private int playerScore = 0;
 	private int correctAnswer = 0;
-	private CheckAnswer check = new CheckAnswer();
+	private int whichQuestion = 0;
 	// QUESTIONS
 	private QuestionDatabase questions;
 	private String[] category;
 	private QuestionDatabase questionsBackup;
 	private String[] categoryBackup;
+	private QuestionModel questionModel= new QuestionModel();
 
+	/**
+	 * @wbp.parser.constructor
+	 */
 	public GameView(QuestionDatabase questionsBackup, String[] categoryBackup) {
 		this.questions = questionsBackup;
 		this.category = categoryBackup;
@@ -71,7 +74,7 @@ public class GameView {
 		// INITIALIZE
 		initialize();
 		// ??
-		correctAnswer = check.showQuestion(this.questions, playerScore, bA, bB, bC, bD, lQuestion);
+		correctAnswer = showQuestion(this.questions, playerScore, bA, bB, bC, bD, lQuestion);
 	}
 
 	public GameView(QuestionDatabase questions, QuestionDatabase questionsBackup, String[] category, String[] categoryBackup) {
@@ -88,7 +91,7 @@ public class GameView {
 		// INITIALIZE
 		initialize();
 		// ??
-		correctAnswer = check.showQuestion(this.questions, playerScore, bA, bB, bC, bD, lQuestion);
+		correctAnswer = showQuestion(this.questions, playerScore, bA, bB, bC, bD, lQuestion);
 	}
 
 	private void initialize() {
@@ -213,7 +216,8 @@ public class GameView {
 		JButton bChangeQuestion = new JButton("");
 		bChangeQuestion.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				check.showQuestion(questions, playerScore, btns[0], btns[1], btns[2], btns[3], lQuestion);
+				whichQuestion++;
+				showQuestion(questions, whichQuestion, btns[0], btns[1], btns[2], btns[3], lQuestion);
 				setImage(bChangeQuestion, "switchUsed");
 				setButtonUnclickable(bChangeQuestion);
 			}
@@ -249,21 +253,21 @@ public class GameView {
 			public void actionPerformed(ActionEvent e) {
 				ChangingColors coloring = new ChangingColors();
 
-				if (check.checkIfRightAnswer(bA, correctAnswer)) {
-					playerScore++;
+				if (correctAnswer == 0) {
+					playerScore++; whichQuestion++;
 					coloring.changeLabelColorGreen(labels[playerScore - 1]);
 					if (playerScore == 12) {
-						check.badAnswer(frame, labels, playerScore, questionsBackup, categoryBackup);
+						badAnswer(frame, labels, whichQuestion, questionsBackup, categoryBackup);
 						return;
 					}
-					correctAnswer = check.showQuestion(questions, playerScore, bA, bB, bC, bD, lQuestion);
+					correctAnswer = showQuestion(questions, whichQuestion, bA, bB, bC, bD, lQuestion);
 				} else {
 					coloring.changeLabelColorRed(labels[playerScore]);
 					labels[playerScore].repaint();
 					coloring.showRightAnswer(correctAnswer, btns);
 
 					SwingUtilities.invokeLater(() -> {
-						check.badAnswer(frame, labels, playerScore, questionsBackup, categoryBackup);
+						badAnswer(frame, labels, whichQuestion, questionsBackup, categoryBackup);
 					});
 				}
 			}
@@ -279,21 +283,21 @@ public class GameView {
 			public void actionPerformed(ActionEvent e) {
 				ChangingColors coloring = new ChangingColors();
 
-				if (check.checkIfRightAnswer(bB, correctAnswer)) {
-					playerScore++;
+				if (correctAnswer == 1) {
+					playerScore++; whichQuestion++;
 					coloring.changeLabelColorGreen(labels[playerScore - 1]);
 					if (playerScore == 12) {
-						check.badAnswer(frame, labels, playerScore, questionsBackup, categoryBackup);
+						badAnswer(frame, labels, whichQuestion, questionsBackup, categoryBackup);
 						return;
 					}
-					correctAnswer = check.showQuestion(questions, playerScore, bA, bB, bC, bD, lQuestion);
+					correctAnswer = showQuestion(questions, whichQuestion, bA, bB, bC, bD, lQuestion);
 				} else {
 					coloring.changeLabelColorRed(labels[playerScore]);
 					labels[playerScore].repaint();
 					coloring.showRightAnswer(correctAnswer, btns);
 
 					SwingUtilities.invokeLater(() -> {
-						check.badAnswer(frame, labels, playerScore, questionsBackup, categoryBackup);
+						badAnswer(frame, labels, whichQuestion, questionsBackup, categoryBackup);
 					});
 				}
 			}
@@ -309,21 +313,21 @@ public class GameView {
 			public void actionPerformed(ActionEvent e) {
 				ChangingColors coloring = new ChangingColors();
 
-				if (check.checkIfRightAnswer(bC, correctAnswer)) {
-					playerScore++;
+				if (correctAnswer == 2) {
+					playerScore++; whichQuestion++;
 					coloring.changeLabelColorGreen(labels[playerScore - 1]);
 					if (playerScore == 12) {
-						check.badAnswer(frame, labels, playerScore, questionsBackup, categoryBackup);
+						badAnswer(frame, labels, whichQuestion, questionsBackup, categoryBackup);
 						return;
 					}
-					correctAnswer = check.showQuestion(questions, playerScore, bA, bB, bC, bD, lQuestion);
+					correctAnswer = showQuestion(questions, whichQuestion, bA, bB, bC, bD, lQuestion);
 				} else {
 					coloring.changeLabelColorRed(labels[playerScore]);
 					labels[playerScore].repaint();
 					coloring.showRightAnswer(correctAnswer, btns);
 
 					SwingUtilities.invokeLater(() -> {
-						check.badAnswer(frame, labels, playerScore, questionsBackup, categoryBackup);
+						badAnswer(frame, labels, whichQuestion, questionsBackup, categoryBackup);
 					});
 				}
 			}
@@ -339,21 +343,21 @@ public class GameView {
 			public void actionPerformed(ActionEvent e) {
 				ChangingColors coloring = new ChangingColors();
 
-				if (check.checkIfRightAnswer(bC, correctAnswer)) {
-					playerScore++;
+				if (correctAnswer == 3) {
+					playerScore++; whichQuestion++;
 					coloring.changeLabelColorGreen(labels[playerScore - 1]);
 					if (playerScore == 12) {
-						check.badAnswer(frame, labels, playerScore, questionsBackup, categoryBackup);
+						badAnswer(frame, labels, whichQuestion, questionsBackup, categoryBackup);
 						return;
 					}
-					correctAnswer = check.showQuestion(questions, playerScore, bA, bB, bC, bD, lQuestion);
+					correctAnswer = showQuestion(questions, whichQuestion, bA, bB, bC, bD, lQuestion);
 				} else {
 					coloring.changeLabelColorRed(labels[playerScore]);
 					labels[playerScore].repaint();
 					coloring.showRightAnswer(correctAnswer, btns);
 
 					SwingUtilities.invokeLater(() -> {
-						check.badAnswer(frame, labels, playerScore, questionsBackup, categoryBackup);
+						badAnswer(frame, labels, whichQuestion, questionsBackup, categoryBackup);
 					});
 				}
 			}
@@ -474,4 +478,59 @@ public class GameView {
 		return false;
 	}
 	
+	private static int showQuestion(QuestionDatabase questionDatabase, int questionNumber,
+			JButton btnA, JButton btnB, JButton btnC, JButton btnD, JLabel label1) {
+		QuestionModel question = questionDatabase.getQuestionModel(questionNumber);
+		
+		label1.setText(question.getQuestionText());
+		
+		String[] answers = question.getAnswerOptions();
+		btnA.setText("A: " + answers[0]);
+		btnB.setText("B: " + answers[1]);
+		btnC.setText("C: " + answers[2]);
+		btnD.setText("D: " + answers[3]);	
+		
+		return question.getCorrectAnswerIndex();
+	}
+	
+	private static String getAward(JLabel label){
+		String labelText = label.getText();
+        int firstIndex = labelText.indexOf(' ');
+        if (firstIndex != -1) {
+            String extractedText = labelText.substring(firstIndex + 1);
+            return extractedText;
+        }
+        return "";
+	}
+	
+	//when bad answer and when resigning from game
+	private static void badAnswer(JFrame frame, JLabel[] label, int playerScore, QuestionDatabase questionsBackup, String[] categoryBackup){
+		
+		try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+		
+		String extractedAward = "";
+		
+		switch (playerScore) {
+		case 0, 1:
+			extractedAward = "0 zł";
+			break;
+		case 2,3,4,5,6:
+			extractedAward = getAward(label[1]);
+			break;
+		case 7,8,9,10,11:
+			extractedAward = getAward(label[6]);
+			break;
+		case 12:
+			extractedAward = getAward(label[11]);
+			break;
+		}
+			
+		EndView form = new EndView(extractedAward, questionsBackup, categoryBackup);
+		form.setVisible(true);
+		frame.dispose();
+	}
 }

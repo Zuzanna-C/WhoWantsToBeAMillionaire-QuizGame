@@ -4,6 +4,7 @@ import java.beans.PropertyVetoException;
 
 import datatypes.QuestionModel;
 
+
 public class GetQuestion implements Runnable {
 
 	private String category;
