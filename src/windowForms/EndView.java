@@ -27,6 +27,7 @@ public class EndView {
 	public EndView(String award, QuestionDatabase questionsBackup, String[] categoryBackup) {
 		this.award = award;
 		this.questionsBackup = questionsBackup;
+		this.categoryBackup = categoryBackup;
 		// INITIALIZE
 		initialize();
 	}
@@ -34,7 +35,7 @@ public class EndView {
 	private void initialize() {
 		frame = new JFrame();
 		frame.setIconImage(
-				Toolkit.getDefaultToolkit().getImage("C:\\Users\\Zuzia\\Pictures\\Screenshots\\millioners.png"));
+				Toolkit.getDefaultToolkit().getImage(".\\resources\\millioners.png"));
 		frame.setBounds(100, 100, 381, 223);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
@@ -58,8 +59,7 @@ public class EndView {
 		JButton btnNewButton = new JButton("Play again");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				GameView form = new GameView(questionsBackup, categoryBackup);
-				form.setVisible(true);
+				new Thread(() -> new GameView(questionsBackup, categoryBackup).start()).start();
 				frame.dispose();
 			}
 		});
@@ -84,7 +84,7 @@ public class EndView {
 		btnNewButton_1.setFocusPainted(false);
 
 		JLabel lblNewLabel_2 = new JLabel("New label");
-		lblNewLabel_2.setIcon(new ImageIcon("C:\\Users\\Zuzia\\Downloads\\background.jpg"));
+		lblNewLabel_2.setIcon(new ImageIcon(".\\resources\\background.jpg"));
 		lblNewLabel_2.setBounds(0, 0, 367, 186);
 		frame.getContentPane().add(lblNewLabel_2);
 	}

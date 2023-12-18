@@ -4,7 +4,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class QuestionCategory {
 	
-	private static final String[] questionCategory = {
+	private static final short length = 30;
+ 	private static final String[] questionCategory = {
             "Literatura światowa",
             "Historia Polski",
             "Matematyka",
@@ -41,7 +42,7 @@ public class QuestionCategory {
 		int qCounter = 0;
 		String[] qCategory = new String[n];
 		do {
-			int index = ThreadLocalRandom.current().nextInt(0, 29);
+			int index = ThreadLocalRandom.current().nextInt(0, length);
 			qCategory[qCounter] = questionCategory[index];
 			qCounter++;
 		} while (qCounter < n);

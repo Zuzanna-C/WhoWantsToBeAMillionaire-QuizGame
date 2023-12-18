@@ -1,31 +1,24 @@
 package windowForms;
 
-import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JButton;
+import javax.swing.ImageIcon;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import backend.Questions;
 
-import backend.ChatGPT;
 import datatypes.QuestionCategory;
 import datatypes.QuestionDatabase;
 
-import javax.swing.JButton;
 import java.awt.event.ActionListener;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
-import javax.swing.ImageIcon;
 
 public class StartingPageView {
-	// LOGGER
-	private static Logger logger = LogManager.getLogger(StartingPageView.class.getName());
 	// LAYOUT
 	private JFrame frame;
 	// QUESTIONS
@@ -47,32 +40,27 @@ public class StartingPageView {
 		});
 	}
 
-	public StartingPageView() {
+	public StartingPageView() { 
 		// SETUP
 		this.questions = new QuestionDatabase();
 		this.category = QuestionCategory.getQuestionCategory(13);
 		this.questionsBackup = new QuestionDatabase();
 		this.categoryBackup = QuestionCategory.getQuestionCategory(13);
 		// THREAD
-		getQuestions(this.questions, this.category);
-		getQuestions(this.questionsBackup, this.categoryBackup);
+		Questions.getQuestions(this.questions, this.category);
+		Questions.getQuestions(this.questionsBackup, this.categoryBackup);
 		// INITIALIZE
 		initialize();
 	}
 	
 	public StartingPageView(QuestionDatabase questionsBackup, String[] categoryBackup) {
 		this.questions = questionsBackup;
-		this.category = categoryBackup;
-		// TEST QUESTIONS
-		if (!isQuestionsOK(this.questions))  { 
-			logger.fatal("NO QUESTIONS");
-			// TEMPLATKA BRAK INTERNETU
-		} 
+		this.category = categoryBackup; 
 		// SETUP
 		this.questionsBackup = new QuestionDatabase();
 		this.categoryBackup = QuestionCategory.getQuestionCategory(13);
 		// THREAD
-		getQuestions(this.questionsBackup, this.categoryBackup);
+		Questions.getQuestions(this.questionsBackup, this.categoryBackup);
 		// INITIALIZE
 		initialize();
 	}
@@ -105,10 +93,8 @@ public class StartingPageView {
 		bNewGame.setFont(new Font("Source Serif Pro", Font.PLAIN, 12));
 		bNewGame.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				GameView newGame = new GameView(questions, questionsBackup, category, categoryBackup);
-				newGame.setVisible(true);
+				new Thread(() -> new GameView(questions, questionsBackup, category, categoryBackup).start()).start();
 				frame.dispose();
-
 			}
 		});
 		bNewGame.setBackground(new Color(255, 255, 255));
@@ -141,44 +127,6 @@ public class StartingPageView {
 
 	public void setVisible(boolean visible) {
 		frame.setVisible(visible);
-	}
-
-	private static void getQuestion(int questionNumber, QuestionDatabase questionDatabase, String[] category) {
-		loop: for (int tryNumber = 0; tryNumber < 3; tryNumber++) {
-			try {
-				questionDatabase.setQuestionModel(questionNumber, ChatGPT.getQuestion(category[questionNumber]));
-				logger.info("Question " + (questionNumber+1) + " - success.");
-				break loop;
-			} catch (Exception e) {
-				logger.error("Error in getting question try: " + tryNumber + " thread: "
-						+ Thread.currentThread().getName() + ".");
-				logger.error(e.getMessage());
-				if (e.getMessage().hashCode() == "No internet connection".hashCode()) {
-
-					try {
-						Thread.sleep(10000);
-					} catch (InterruptedException e1) {
-						logger.error("Error in Thread.sleep().");
-						continue loop;
-					}
-				}
-				continue loop;
-			}
-		}
-	}
-
-	private static void getQuestions(QuestionDatabase questions, String[] category) {
-		ExecutorService pool = Executors.newFixedThreadPool(2);
-		for (int questionNumber = 0; questionNumber < 13; questionNumber++) {
-			int questionNumberF = questionNumber;
-			pool.submit(() -> getQuestion(questionNumberF, questions, category));
-		}
-		pool.shutdown();
-	}
-
-	private static boolean isQuestionsOK(QuestionDatabase questions) {
-		if (questions.getNullIndex() == -1) return true;
-		return false;
 	}
 
 }

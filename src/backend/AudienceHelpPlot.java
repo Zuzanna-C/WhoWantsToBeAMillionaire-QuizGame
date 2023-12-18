@@ -1,8 +1,10 @@
 package backend;
 
 import java.awt.Color;
+
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartFrame;
 import org.jfree.chart.JFreeChart;
@@ -11,7 +13,7 @@ import org.jfree.data.category.DefaultCategoryDataset;
 
 public class AudienceHelpPlot {
 	
-	private static void Plot(int[] values) {	
+	private static void Plot(int[] values) {
 		DefaultCategoryDataset data = new DefaultCategoryDataset();
 		data.setValue(values[0], "Value", "A");
 		data.setValue(values[1], "Value", "B");

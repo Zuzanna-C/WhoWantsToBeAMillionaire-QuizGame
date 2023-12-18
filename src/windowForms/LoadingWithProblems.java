@@ -1,47 +1,30 @@
 package windowForms;
 
-import java.awt.EventQueue;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import java.awt.Font;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.Color;
 import javax.swing.JButton;
-import javax.swing.JPanel;
+
+import backend.Questions;
+import datatypes.QuestionCategory;
+import datatypes.QuestionDatabase;
 
 public class LoadingWithProblems {
 
 	private JFrame frame;
-	private String[] probemMessages= {"There is no internet connection.","hHat GPT is out of service"};
+	private String probemMessages;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					LoadingWithProblems window = new LoadingWithProblems();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
-	 * Create the application.
-	 */
-	public LoadingWithProblems() {
+	public LoadingWithProblems(String probemMessages) {
+		this.probemMessages = probemMessages;
 		initialize();
 	}
 
-	/**
-	 * Initialize the contents of the frame.
-	 */
 	private void initialize() {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 290, 190);
@@ -56,26 +39,45 @@ public class LoadingWithProblems {
 		lLoading.setBounds(62, 11, 163, 28);
 		frame.getContentPane().add(lLoading);
 		
-		JButton button = new JButton("Reload");
+		JLabel lPleaseWait = new JLabel(probemMessages);
+		lPleaseWait.setForeground(new Color(240, 255, 255));
+		lPleaseWait.setFont(new Font("Source Serif Pro", Font.PLAIN, 14));
+		lPleaseWait.setBounds(50, 50, 216, 20);
+		frame.getContentPane().add(lPleaseWait);
+		
+		JButton button = new JButton("Reload App");
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String[] c = QuestionCategory.getQuestionCategory(13);
+				QuestionDatabase q = new QuestionDatabase();
+				Questions.getQuestions(q, c);
+				long ct = System.currentTimeMillis();
+				while (System.currentTimeMillis() - ct < 4*Questions.sleepTime) {
+					if (q.getQuestionModel(0) != null) {
+						StartingPageView st = new StartingPageView(q, c);
+						st.setVisible(true);
+						frame.dispose();
+						break;
+					}
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException ex) {}
+				}
+				lPleaseWait.setText("Reload App - Faild");
+				button.setVisible(false);
+			}
+		});
 		button.setFont(new Font("Source Serif Pro", Font.PLAIN, 12));
 		button.setBackground(new Color(255, 255, 255));
 		button.setBounds(93, 91, 101, 28);
 		frame.getContentPane().add(button);
 		button.setFocusPainted(false);
 		
-		JLabel lPleaseWait = new JLabel(probemMessages[0]);
-		lPleaseWait.setForeground(new Color(240, 255, 255));
-		lPleaseWait.setFont(new Font("Source Serif Pro", Font.PLAIN, 14));
-		lPleaseWait.setBounds(50, 50, 216, 20);
-		frame.getContentPane().add(lPleaseWait);
-		
 		JLabel lBackground = new JLabel("");
 		lBackground.setIcon(new ImageIcon(".\\resources\\background.png"));
 		lBackground.setBounds(0, 0, 276, 153);
 		frame.getContentPane().add(lBackground);
 		
-		
-		
-		
+		frame.setVisible(true);
 	}
 }

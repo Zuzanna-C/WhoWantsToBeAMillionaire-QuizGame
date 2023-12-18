@@ -5,7 +5,6 @@
 		<Property name="path">./logs</Property>
 	</Properties>
 
-
 	<Appenders>
 		<Console name="Console" target="SYSTEM_OUT">
 			<PatternLayout
@@ -16,19 +15,30 @@
 				<pattern>%d %-5level %logger{36}.%-5M | %msg%n</pattern>
 			</PatternLayout>
 		</File>
+		<File name="ERRORLOG" fileName="${path}/app_errors.log">
+			<PatternLayout>
+				<pattern>%d %-5level %logger{36}.%-5M | %msg%n</pattern>
+			</PatternLayout>
+		</File>
 	</Appenders>
 
 	<Loggers>
 		<!--For package backend-->
 		<Logger name="backend" level="info" additivity="false">
 			<AppenderRef ref="LOG"/>
-			<AppenderRef ref="Console"/>
+			<AppenderRef ref="Console" />
 		</Logger>
+		<!--<Logger name="backend" level="error" additivity="true">
+			<AppenderRef ref="ERRORLOG"/>
+		</Logger>-->
 		<!--For package windowForms-->
 		<Logger name="windowForms" level="info" additivity="false">
 			<AppenderRef ref="LOG"/>
-			<AppenderRef ref="Console"/>
+			<AppenderRef ref="Console" />
 		</Logger>
+		<!--<Logger name="windowForms" level="error" additivity="true">
+			<AppenderRef ref="ERRORLOG"/>
+		</Logger>-->
         <!--ROOT-->
 		<Root level="error">
 			<AppenderRef ref="Console" />

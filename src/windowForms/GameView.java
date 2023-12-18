@@ -2,8 +2,6 @@ package windowForms;
 
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.awt.Image;
 
 import javax.swing.JFrame;
@@ -22,13 +20,12 @@ import org.apache.logging.log4j.Logger;
 
 import backend.AudienceHelpPlot;
 import backend.ChangingColors;
-import backend.ChatGPT;
+import backend.Questions;
 //import backend.CheckAnswer;
 import datatypes.QuestionCategory;
 import datatypes.QuestionDatabase;
 import datatypes.QuestionModel;
 
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import java.awt.Font;
 
@@ -47,53 +44,63 @@ public class GameView {
 	// GAME
 	private int playerScore = 0;
 	private int correctAnswer = 0;
-	private int whichQuestion = 0;
+	private int questionNumber = 0;
 	// QUESTIONS
 	private QuestionDatabase questions;
 	private String[] category;
 	private QuestionDatabase questionsBackup;
 	private String[] categoryBackup;
-	private QuestionModel questionModel= new QuestionModel();
 
-	/**
-	 * @wbp.parser.constructor
-	 */
 	public GameView(QuestionDatabase questionsBackup, String[] categoryBackup) {
 		this.questions = questionsBackup;
 		this.category = categoryBackup;
-		// TEST QUESTIONS
-		if (!isQuestionsOK(this.questions))  { 
-			logger.fatal("NO QUESTIONS");
-			// TEMPLATKA BRAK INTERNETU
-		}
 		// SETUP
 		this.questionsBackup = new QuestionDatabase();
 		this.categoryBackup = QuestionCategory.getQuestionCategory(13);
 		// THREAD
-		getQuestions(this.questionsBackup, this.categoryBackup);
+		Questions.getQuestions(this.questionsBackup, this.categoryBackup);
 		// INITIALIZE
 		initialize();
-		// ??
-		correctAnswer = showQuestion(this.questions, playerScore, bA, bB, bC, bD, lQuestion);
 	}
 
-	public GameView(QuestionDatabase questions, QuestionDatabase questionsBackup, String[] category, String[] categoryBackup) {
+	public GameView(QuestionDatabase questions, QuestionDatabase questionsBackup, String[] category,
+			String[] categoryBackup) {
 		this.questions = questions;
 		this.questionsBackup = questionsBackup;
 		this.category = category;
 		this.categoryBackup = categoryBackup;
-		// TEST QUESTIONS
-		if (!isQuestionsOK(this.questions))  { 
-			logger.fatal("NO QUESTIONS");
-			// TEMPLATKA BRAK INTERNETU
-		}
-		if (!isQuestionsOK(this.questionsBackup)) getMissingQuestions(this.questionsBackup, this.categoryBackup);
 		// INITIALIZE
 		initialize();
-		// ??
-		correctAnswer = showQuestion(this.questions, playerScore, bA, bB, bC, bD, lQuestion);
 	}
 
+	public void start() {
+		// TEST QUESTION
+		try {
+			correctAnswer = showQuestion(questions, questionNumber, bA, bB, bC, bD, lQuestion);
+			frame.setVisible(true);
+		} catch (NullPointerException e) {
+			logger.fatal("NO QUESTION: " + questionNumber);
+			if (new Loading(questionNumber, questions, category).isLoad()) {
+				frame.setVisible(true);
+				Update();
+			}
+		}
+	}
+
+	private void Update() {
+		frame.setEnabled(false);
+		try {
+			correctAnswer = showQuestion(questions, questionNumber, bA, bB, bC, bD, lQuestion);
+			frame.setEnabled(true);
+		} catch (NullPointerException e) {
+			logger.fatal("NO QUESTION: " + questionNumber);
+			if (new Loading(questionNumber, questions, category).isLoad()) {
+				frame.setEnabled(true);
+				Update();
+			}
+		}
+	}
+	
 	private void initialize() {
 		frame = new JFrame();
 		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(".\\resources\\millioners.png"));
@@ -216,8 +223,8 @@ public class GameView {
 		JButton bChangeQuestion = new JButton("");
 		bChangeQuestion.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				whichQuestion++;
-				showQuestion(questions, whichQuestion, btns[0], btns[1], btns[2], btns[3], lQuestion);
+				questionNumber++;
+				new Thread(()->Update()).start();
 				setImage(bChangeQuestion, "switchUsed");
 				setButtonUnclickable(bChangeQuestion);
 			}
@@ -254,20 +261,21 @@ public class GameView {
 				ChangingColors coloring = new ChangingColors();
 
 				if (correctAnswer == 0) {
-					playerScore++; whichQuestion++;
+					playerScore++;
+					questionNumber++;
 					coloring.changeLabelColorGreen(labels[playerScore - 1]);
 					if (playerScore == 12) {
-						badAnswer(frame, labels, whichQuestion, questionsBackup, categoryBackup);
+						badAnswer(frame, labels, questionNumber, questionsBackup, categoryBackup);
 						return;
 					}
-					correctAnswer = showQuestion(questions, whichQuestion, bA, bB, bC, bD, lQuestion);
+					new Thread(()->Update()).start();
 				} else {
 					coloring.changeLabelColorRed(labels[playerScore]);
 					labels[playerScore].repaint();
 					coloring.showRightAnswer(correctAnswer, btns);
 
 					SwingUtilities.invokeLater(() -> {
-						badAnswer(frame, labels, whichQuestion, questionsBackup, categoryBackup);
+						badAnswer(frame, labels, questionNumber, questionsBackup, categoryBackup);
 					});
 				}
 			}
@@ -284,20 +292,21 @@ public class GameView {
 				ChangingColors coloring = new ChangingColors();
 
 				if (correctAnswer == 1) {
-					playerScore++; whichQuestion++;
+					playerScore++;
+					questionNumber++;
 					coloring.changeLabelColorGreen(labels[playerScore - 1]);
 					if (playerScore == 12) {
-						badAnswer(frame, labels, whichQuestion, questionsBackup, categoryBackup);
+						badAnswer(frame, labels, questionNumber, questionsBackup, categoryBackup);
 						return;
 					}
-					correctAnswer = showQuestion(questions, whichQuestion, bA, bB, bC, bD, lQuestion);
+					new Thread(()->Update()).start();
 				} else {
 					coloring.changeLabelColorRed(labels[playerScore]);
 					labels[playerScore].repaint();
 					coloring.showRightAnswer(correctAnswer, btns);
 
 					SwingUtilities.invokeLater(() -> {
-						badAnswer(frame, labels, whichQuestion, questionsBackup, categoryBackup);
+						badAnswer(frame, labels, questionNumber, questionsBackup, categoryBackup);
 					});
 				}
 			}
@@ -314,20 +323,21 @@ public class GameView {
 				ChangingColors coloring = new ChangingColors();
 
 				if (correctAnswer == 2) {
-					playerScore++; whichQuestion++;
+					playerScore++;
+					questionNumber++;
 					coloring.changeLabelColorGreen(labels[playerScore - 1]);
 					if (playerScore == 12) {
-						badAnswer(frame, labels, whichQuestion, questionsBackup, categoryBackup);
+						badAnswer(frame, labels, questionNumber, questionsBackup, categoryBackup);
 						return;
 					}
-					correctAnswer = showQuestion(questions, whichQuestion, bA, bB, bC, bD, lQuestion);
+					new Thread(()->Update()).start();
 				} else {
 					coloring.changeLabelColorRed(labels[playerScore]);
 					labels[playerScore].repaint();
 					coloring.showRightAnswer(correctAnswer, btns);
 
 					SwingUtilities.invokeLater(() -> {
-						badAnswer(frame, labels, whichQuestion, questionsBackup, categoryBackup);
+						badAnswer(frame, labels, questionNumber, questionsBackup, categoryBackup);
 					});
 				}
 			}
@@ -344,20 +354,21 @@ public class GameView {
 				ChangingColors coloring = new ChangingColors();
 
 				if (correctAnswer == 3) {
-					playerScore++; whichQuestion++;
+					playerScore++;
+					questionNumber++;
 					coloring.changeLabelColorGreen(labels[playerScore - 1]);
 					if (playerScore == 12) {
-						badAnswer(frame, labels, whichQuestion, questionsBackup, categoryBackup);
+						badAnswer(frame, labels, questionNumber, questionsBackup, categoryBackup);
 						return;
 					}
-					correctAnswer = showQuestion(questions, whichQuestion, bA, bB, bC, bD, lQuestion);
+					new Thread(()->Update()).start();
 				} else {
 					coloring.changeLabelColorRed(labels[playerScore]);
 					labels[playerScore].repaint();
 					coloring.showRightAnswer(correctAnswer, btns);
 
 					SwingUtilities.invokeLater(() -> {
-						badAnswer(frame, labels, whichQuestion, questionsBackup, categoryBackup);
+						badAnswer(frame, labels, questionNumber, questionsBackup, categoryBackup);
 					});
 				}
 			}
@@ -409,8 +420,8 @@ public class GameView {
 		int index1 = losujLiczbe(numList);
 		int index2 = losujLiczbe(numList);
 
-		questions.getQuestionModel(playerScore).setAnswerIndexFlag(index1, 0);
-		questions.getQuestionModel(playerScore).setAnswerIndexFlag(index2, 0);
+		questions.getQuestionModel(questionNumber).setAnswerIndexFlag(index1, 0);
+		questions.getQuestionModel(questionNumber).setAnswerIndexFlag(index2, 0);
 
 		btns[index1].setText("");
 		btns[index2].setText("");
@@ -427,108 +438,59 @@ public class GameView {
 			button.removeActionListener(al);
 		}
 	}
-	
-	// WADKI
-	private static void getQuestion(int questionNumber, QuestionDatabase questionDatabase, String[] category) {
-		loop: for (int tryNumber = 0; tryNumber < 3; tryNumber++) {
-			try {
-				questionDatabase.setQuestionModel(questionNumber, ChatGPT.getQuestion(category[questionNumber]));
-				logger.info("Question " + (questionNumber+1) + " - success.");
-				break loop;
-			} catch (Exception e) {
-				logger.error("Error in getting question try: " + tryNumber + " thread: "
-						+ Thread.currentThread().getName() + ".");
-				logger.error(e.getMessage());
-				if (e.getMessage().hashCode() == "No internet connection".hashCode()) {
 
-					try {
-						Thread.sleep(10000);
-					} catch (InterruptedException e1) {
-						logger.error("Error in Thread.sleep().");
-						continue loop;
-					}
-				}
-				continue loop;
-			}
-		}
-	}
-
-	private static void getQuestions(QuestionDatabase questions, String[] category) {
-		ExecutorService pool = Executors.newFixedThreadPool(2);
-		for (int questionNumber = 0; questionNumber < 13; questionNumber++) {
-			int questionNumberF = questionNumber;
-			pool.submit(() -> getQuestion(questionNumberF, questions, category));
-		}
-		pool.shutdown();
-	}
-	
-	private static void getMissingQuestions(QuestionDatabase questions, String[] category)  {
-		ExecutorService pool = Executors.newFixedThreadPool(2);
-		for (int questionNumber = 0; questionNumber < questions.size(); questionNumber++) {
-			if (questions.getQuestionModel(questionNumber) == null || questions.getQuestionModel(questionNumber).isNull()) {
-				int questionNumberF = questionNumber;
-				pool.submit(() -> getQuestion(questionNumberF, questions, category));
-			}
-		}
-		pool.shutdown();
-	}
-
-	private static boolean isQuestionsOK(QuestionDatabase questions) {
-		if (questions.getNullIndex() == -1) return true;
-		return false;
-	}
-	
-	private static int showQuestion(QuestionDatabase questionDatabase, int questionNumber,
-			JButton btnA, JButton btnB, JButton btnC, JButton btnD, JLabel label1) {
+	private static int showQuestion(QuestionDatabase questionDatabase, int questionNumber, JButton btnA, JButton btnB,
+			JButton btnC, JButton btnD, JLabel label1) {
 		QuestionModel question = questionDatabase.getQuestionModel(questionNumber);
-		
+
 		label1.setText(question.getQuestionText());
-		
+
 		String[] answers = question.getAnswerOptions();
 		btnA.setText("A: " + answers[0]);
 		btnB.setText("B: " + answers[1]);
 		btnC.setText("C: " + answers[2]);
-		btnD.setText("D: " + answers[3]);	
-		
+		btnD.setText("D: " + answers[3]);
+
 		return question.getCorrectAnswerIndex();
 	}
-	
-	private static String getAward(JLabel label){
+
+	private static String getAward(JLabel label) {
 		String labelText = label.getText();
-        int firstIndex = labelText.indexOf(' ');
-        if (firstIndex != -1) {
-            String extractedText = labelText.substring(firstIndex + 1);
-            return extractedText;
-        }
-        return "";
+		int firstIndex = labelText.indexOf(' ');
+		if (firstIndex != -1) {
+			String extractedText = labelText.substring(firstIndex + 1);
+			return extractedText;
+		}
+		return "";
 	}
-	
-	//when bad answer and when resigning from game
-	private static void badAnswer(JFrame frame, JLabel[] label, int playerScore, QuestionDatabase questionsBackup, String[] categoryBackup){
-		
+
+	// when bad answer and when resigning from game
+	private void badAnswer(JFrame frame, JLabel[] label, int playerScore, QuestionDatabase questionsBackup,
+			String[] categoryBackup) {
+
 		try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-		
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
 		String extractedAward = "";
-		
+
 		switch (playerScore) {
 		case 0, 1:
 			extractedAward = "0 zł";
 			break;
-		case 2,3,4,5,6:
+		case 2, 3, 4, 5, 6:
 			extractedAward = getAward(label[1]);
 			break;
-		case 7,8,9,10,11:
+		case 7, 8, 9, 10, 11:
 			extractedAward = getAward(label[6]);
 			break;
 		case 12:
 			extractedAward = getAward(label[11]);
 			break;
 		}
-			
+
 		EndView form = new EndView(extractedAward, questionsBackup, categoryBackup);
 		form.setVisible(true);
 		frame.dispose();

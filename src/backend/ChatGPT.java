@@ -75,7 +75,7 @@ public class ChatGPT {
 			}
 
 		} catch (IOException e) {
-			if (e.getMessage().hashCode() == "api.openai.com".hashCode()) {
+			if (e.getMessage().hashCode() == "api.openai.com".hashCode() || e.getMessage().hashCode() == "No route to host: connect".hashCode()) {
 				logger.error("No internet connection.");
 				throw new Exception("No internet connection");
 			}

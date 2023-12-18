@@ -1,44 +1,32 @@
 package windowForms;
 
-import java.awt.EventQueue;
-
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import java.awt.Toolkit;
 import javax.swing.JLabel;
+
+import backend.Questions;
+import datatypes.QuestionDatabase;
+
 import java.awt.Font;
 import java.awt.Color;
 
 public class Loading {
 
 	private JFrame frmLoading;
+	// QUESTIONS
+	private QuestionDatabase questions;
+	private String[] category;
+	private int questionNumber;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Loading window = new Loading();
-					window.frmLoading.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
-	 * Create the application.
-	 */
-	public Loading() {
+	public Loading(int questionNumber, QuestionDatabase questions, String[] category) {
+		this.questionNumber = questionNumber;
+		this.questions = questions;
+		this.category = category;
 		initialize();
+		frmLoading.setVisible(true);
 	}
 
-	/**
-	 * Initialize the contents of the frame.
-	 */
 	private void initialize() {
 		frmLoading = new JFrame();
 		frmLoading.setResizable(false);
@@ -64,5 +52,22 @@ public class Loading {
 		lBackground.setIcon(new ImageIcon(".\\resources\\background.png"));
 		lBackground.setBounds(0, 0, 227, 85);
 		frmLoading.getContentPane().add(lBackground);
+	}
+	
+	public boolean isLoad() {
+		Questions.getMissingQuestions(questions, category);
+		long time_start = System.currentTimeMillis();
+		while (System.currentTimeMillis() - time_start < 4*Questions.sleepTime) {
+			if (questions.getQuestionModel(this.questionNumber) != null) {
+				frmLoading.dispose();
+				return true;
+			}
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {}
+		}
+		new LoadingWithProblems("Serwis obecnie niedostępny");
+		frmLoading.dispose();
+		return false;
 	}
 }

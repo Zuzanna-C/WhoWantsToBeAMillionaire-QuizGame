@@ -13,7 +13,7 @@ public class QuestionModel {
 	
 	private String questionText;
     private String[] answerOptions;
-    private ArrayList<Integer> answerIndexFlags = new ArrayList<Integer>(Arrays.asList(1,-1,-1,-1)); //-1 incorrect, 1 correct, 0 brak, ABCD
+    private ArrayList<Integer> answerIndexFlags = new ArrayList<Integer>(Arrays.asList(1,-1,-1,-1)); //-1 incorrect, 1 correct, 0 none, ABCD
 
     public QuestionModel() {}
     
@@ -52,7 +52,6 @@ public class QuestionModel {
 		return false;
 	}
 
-    // Wzorzec Builder
     public QuestionModel shuffleAnswerOptions() {
         Random r = new Random();
     	if (r.nextInt(101) <= 25) return this;
