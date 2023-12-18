@@ -48,7 +48,7 @@ public class CheckAnswer {
         return "";
 	}
 	
-	public void badAnswer(JFrame frame, JLabel[] label, int playerScore){
+	public void badAnswer(JFrame frame, JLabel[] label, int playerScore, QuestionDatabase questionsBackup, String[] categoryBackup){
 		
 		try {
             Thread.sleep(2000);
@@ -76,7 +76,7 @@ public class CheckAnswer {
 			break;
 		}
 			
-		EndView form = new EndView(extractedAward);
+		EndView form = new EndView(extractedAward, questionsBackup, categoryBackup);
 		form.setVisible(true);
 		frame.dispose();
 	}
