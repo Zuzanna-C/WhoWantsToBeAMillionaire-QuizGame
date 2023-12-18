@@ -9,23 +9,27 @@
 	<Appenders>
 		<Console name="Console" target="SYSTEM_OUT">
 			<PatternLayout
-				pattern="%d %-5level %logger{36}.%-5M %msg%n" />
+				pattern="%d %-5level %logger{36}.%-5M | %msg%n" />
 		</Console>
-		
-		<File name="backendLOG" fileName="${path}/backend.log">
+		<File name="LOG" fileName="${path}/app.log">
 			<PatternLayout>
-				<pattern>%d %-5level %logger{36}.%-5M %msg%n</pattern>
+				<pattern>%d %-5level %logger{36}.%-5M | %msg%n</pattern>
 			</PatternLayout>
 		</File>
 	</Appenders>
 
 	<Loggers>
 		<!--For package backend-->
-		<Logger name="backedn" level="info" additivity="false">
-			<AppenderRef ref="backendLOG"/>
-			
+		<Logger name="backend" level="info" additivity="false">
+			<AppenderRef ref="LOG"/>
+			<AppenderRef ref="Console"/>
 		</Logger>
-
+		<!--For package windowForms-->
+		<Logger name="windowForms" level="info" additivity="false">
+			<AppenderRef ref="LOG"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+        <!--ROOT-->
 		<Root level="error">
 			<AppenderRef ref="Console" />
 		</Root>
