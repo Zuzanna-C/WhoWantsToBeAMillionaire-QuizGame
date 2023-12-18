@@ -6,15 +6,17 @@ import java.util.Random;
 
 public class QuestionModel {
 	
-	public int A=0;
-	public int B=1;
-	public int C=2;
-	public int D=3;
+	public final static int A=0;
+	public final static int B=1;
+	public final static int C=2;
+	public final static int D=3;
 	
 	private String questionText;
     private String[] answerOptions;
     private ArrayList<Integer> answerIndexFlags = new ArrayList<Integer>(Arrays.asList(1,-1,-1,-1)); //-1 incorrect, 1 correct, 0 brak, ABCD
 
+    public QuestionModel() {}
+    
     public QuestionModel(String questionText, String[] answerOptions) {
     	this.questionText = questionText;
         this.answerOptions = answerOptions;
@@ -45,6 +47,12 @@ public class QuestionModel {
         return answerIndexFlags.indexOf(1);
     }
     
+    public boolean isNull() {
+		if (questionText == null) return true;
+		return false;
+	}
+
+    // Wzorzec Builder
     public QuestionModel shuffleAnswerOptions() {
         Random r = new Random();
     	if (r.nextInt(101) <= 25) return this;
