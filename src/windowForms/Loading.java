@@ -10,6 +10,7 @@ import datatypes.QuestionDatabase;
 
 import java.awt.Font;
 import java.awt.Color;
+import java.awt.Dimension;
 
 public class Loading {
 
@@ -35,6 +36,10 @@ public class Loading {
 		frmLoading.setBounds(100, 100, 241, 122);
 		frmLoading.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmLoading.getContentPane().setLayout(null);
+		
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		frmLoading.setLocation(screenSize.width / 2 - frmLoading.getSize().width / 2,
+				screenSize.height / 2 - frmLoading.getSize().height / 2);
 		
 		JLabel lLoading = new JLabel("Loading...");
 		lLoading.setForeground(new Color(240, 255, 255));

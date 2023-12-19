@@ -28,6 +28,7 @@ public class QuestionCategory {
             "Religia",
             "Sławni ludzie",
             "Gry komputerowe",
+            "Gry planszowe",
             "Transport",
             "Architektura",
             "Moda i styl",
@@ -35,7 +36,8 @@ public class QuestionCategory {
             "Zwierzęta",
             "Gry planszowe",
             "E-sport",
-            "Przyroda"
+            "Przyroda",
+            "Botanika"
         };
 	
 	public static String[] getQuestionCategory(int n) {

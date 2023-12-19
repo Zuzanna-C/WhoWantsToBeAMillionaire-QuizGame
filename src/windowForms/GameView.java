@@ -21,6 +21,7 @@ import org.apache.logging.log4j.Logger;
 import backend.AudienceHelpPlot;
 import backend.ChangingColors;
 import backend.Questions;
+import backend.SaveGame;
 //import backend.CheckAnswer;
 import datatypes.QuestionCategory;
 import datatypes.QuestionDatabase;
@@ -51,6 +52,8 @@ public class GameView {
 	private QuestionDatabase questionsBackup;
 	private String[] categoryBackup;
 
+	
+
 	public GameView(QuestionDatabase questionsBackup, String[] categoryBackup) {
 		this.questions = questionsBackup;
 		this.category = categoryBackup;
@@ -63,6 +66,9 @@ public class GameView {
 		initialize();
 	}
 
+	/**
+	 * @wbp.parser.constructor
+	 */
 	public GameView(QuestionDatabase questions, QuestionDatabase questionsBackup, String[] category,
 			String[] categoryBackup) {
 		this.questions = questions;
@@ -71,6 +77,20 @@ public class GameView {
 		this.categoryBackup = categoryBackup;
 		// INITIALIZE
 		initialize();
+	}
+	
+	public GameView(QuestionDatabase questions, QuestionDatabase questionsBackup, String[] category, String[] categoryBackup,
+			int playerScore, int questionNumber) {
+		this.questions = questions;
+		this.questionsBackup = questionsBackup;
+		this.category = category;
+		this.categoryBackup = categoryBackup;
+		this.playerScore = playerScore;
+		this.questionNumber = questionNumber;
+		// INITIALIZE
+		initialize();
+
+		correctAnswer = showQuestion(this.questions, questionNumber, bA, bB, bC, bD, lQuestion);
 	}
 
 	public void start() {
@@ -103,6 +123,7 @@ public class GameView {
 	
 	private void initialize() {
 		frame = new JFrame();
+		frame.setResizable(false);
 		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(".\\resources\\millioners.png"));
 		frame.setTitle("Who wants to be a Millionare");
 		frame.getContentPane().setBackground(new Color(245, 245, 245));
@@ -203,6 +224,30 @@ public class GameView {
 		labels[9] = l10;
 		labels[10] = l11;
 		labels[11] = l12;
+		
+		JButton bSave = new JButton("Save game");
+		bSave.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {	
+				SaveGame.saveToProperties(category, playerScore, questionNumber);
+			}
+		});
+		bSave.setFont(new Font("Source Serif Pro", Font.PLAIN, 12));
+		bSave.setFocusPainted(false);
+		bSave.setBackground(Color.WHITE);
+		bSave.setBounds(29, 40, 89, 23);
+		frame.getContentPane().add(bSave);
+		
+		JButton bResign = new JButton("Resign");
+		bResign.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				resign(frame, labels, questionNumber, questionsBackup, categoryBackup);
+			}
+		});
+		bResign.setBounds(29, 10, 89, 23);
+		bResign.setFont(new Font("Source Serif Pro", Font.PLAIN, 12));
+		bResign.setBackground(new Color(255, 255, 255));
+		bResign.setFocusPainted(false);
+		frame.getContentPane().add(bResign);
 
 		JButton b5050 = new JButton("");
 		b5050.addActionListener(new ActionListener() {
@@ -491,6 +536,20 @@ public class GameView {
 			break;
 		}
 
+		EndView form = new EndView(extractedAward, questionsBackup, categoryBackup);
+		form.setVisible(true);
+		frame.dispose();
+	}
+	
+	private static void resign(JFrame frame, JLabel[] label, int playerScore, QuestionDatabase questionsBackup, String[] categoryBackup){		
+		String extractedAward;
+		if (playerScore == 0) {
+			extractedAward =  "0 zł";
+		}
+		else {
+			extractedAward = getAward(label[playerScore - 1]);
+		}		
+			
 		EndView form = new EndView(extractedAward, questionsBackup, categoryBackup);
 		form.setVisible(true);
 		frame.dispose();

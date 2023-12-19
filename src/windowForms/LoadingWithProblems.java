@@ -9,6 +9,8 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Color;
+import java.awt.Dimension;
+
 import javax.swing.JButton;
 
 import backend.Questions;
@@ -27,11 +29,16 @@ public class LoadingWithProblems {
 
 	private void initialize() {
 		frame = new JFrame();
+		frame.setResizable(false);
 		frame.setBounds(100, 100, 290, 190);
 		frame.setTitle("Error");
 		frame.setIconImage(Toolkit.getDefaultToolkit().getImage("resources\\millioners.png"));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
+		
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		frame.setLocation(screenSize.width / 2 - frame.getSize().width / 2,
+				screenSize.height / 2 - frame.getSize().height / 2);
 		
 		JLabel lLoading = new JLabel("There was a problem");
 		lLoading.setForeground(new Color(240, 255, 255));
@@ -69,14 +76,21 @@ public class LoadingWithProblems {
 		});
 		button.setFont(new Font("Source Serif Pro", Font.PLAIN, 12));
 		button.setBackground(new Color(255, 255, 255));
-		button.setBounds(93, 91, 101, 28);
+		button.setBounds(144, 114, 101, 28);
 		frame.getContentPane().add(button);
 		button.setFocusPainted(false);
+		
+		JButton bClose = new JButton("Reload App");
+		bClose.setFont(new Font("Source Serif Pro", Font.PLAIN, 12));
+		bClose.setFocusPainted(false);
+		bClose.setBackground(Color.WHITE);
+		bClose.setBounds(34, 114, 101, 28);
+		frame.getContentPane().add(bClose);
 		
 		JLabel lBackground = new JLabel("");
 		lBackground.setIcon(new ImageIcon(".\\resources\\background.png"));
 		lBackground.setBounds(0, 0, 276, 153);
-		frame.getContentPane().add(lBackground);
+		frame.getContentPane().add(lBackground);	
 		
 		frame.setVisible(true);
 	}

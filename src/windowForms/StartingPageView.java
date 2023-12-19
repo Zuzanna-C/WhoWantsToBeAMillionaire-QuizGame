@@ -6,11 +6,15 @@ import javax.swing.JButton;
 import javax.swing.ImageIcon;
 
 import backend.Questions;
-
+import backend.SaveGame;
 import datatypes.QuestionCategory;
 import datatypes.QuestionDatabase;
 
 import java.awt.event.ActionListener;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Map;
+import java.util.Properties;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
@@ -67,6 +71,7 @@ public class StartingPageView {
 
 	private void initialize() {
 		frame = new JFrame();
+		frame.setResizable(false);
 		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(".\\resources\\millioners.png"));
 		frame.setBounds(100, 100, 402, 214);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -82,12 +87,46 @@ public class StartingPageView {
 		lWelcome.setBounds(143, 11, 138, 29);
 		frame.getContentPane().add(lWelcome);
 
-		JButton bStats = new JButton("Stats");
-		bStats.setFont(new Font("Source Serif Pro", Font.PLAIN, 12));
-		bStats.setBackground(new Color(255, 255, 255));
-		bStats.setBounds(61, 90, 114, 29);
-		bStats.setFocusPainted(false);
-		frame.getContentPane().add(bStats);
+		JButton bResume = new JButton("Resume");
+		bResume.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {			
+				int playerScore = 0;
+				int questionNumber = 0;
+				String FILE_PATH = "settings.properties";
+				
+				try (FileInputStream input = new FileInputStream(FILE_PATH)) {
+		            Properties properties = new Properties();
+		            properties.load(input);
+
+		            if (properties.isEmpty()) {
+		                category = QuestionCategory.getQuestionCategory(13);
+		            } else {
+		            	Map<String, Object> settings = SaveGame.loadFromProperties();
+
+						//KATEGORIE POBRANE Z PLIKU
+						//TRZEBA POBRAC PYTANIA NA ICH PODSTAWIE I PO PROSTU PRZYPISAĆ DO questions
+						String[] categories = (String[]) settings.get("categories");
+						playerScore = (int) settings.get("playerScore");
+						questionNumber = (int) settings.get("whichQuestion");
+		            }
+
+		        } catch (IOException e1) {
+		            e1.printStackTrace();
+		        }
+				
+							
+			
+				GameView newGame = new GameView(questions, questionsBackup, category, categoryBackup,
+						playerScore, questionNumber);
+				newGame.setVisible(true);
+				frame.dispose();
+			}
+		});
+		bResume.setFont(new Font("Source Serif Pro", Font.PLAIN, 12));
+		bResume.setBackground(new Color(255, 255, 255));
+		bResume.setBounds(60, 90, 114, 29);
+		bResume.setFocusPainted(false);
+		frame.getContentPane().add(bResume);
 
 		JButton bNewGame = new JButton("New game");
 		bNewGame.setFont(new Font("Source Serif Pro", Font.PLAIN, 12));
@@ -98,7 +137,7 @@ public class StartingPageView {
 			}
 		});
 		bNewGame.setBackground(new Color(255, 255, 255));
-		bNewGame.setBounds(225, 93, 114, 29);
+		bNewGame.setBounds(225, 90, 114, 29);
 		bNewGame.setFocusPainted(false);
 		frame.getContentPane().add(bNewGame);
 
@@ -119,7 +158,7 @@ public class StartingPageView {
 		lText.setBounds(88, 33, 239, 36);
 		frame.getContentPane().add(lText);
 
-		JLabel lblNewLabel = new JLabel("New label");
+		JLabel lblNewLabel = new JLabel("");
 		lblNewLabel.setIcon(new ImageIcon(".\\resources\\background.png"));
 		lblNewLabel.setBounds(0, 0, 388, 177);
 		frame.getContentPane().add(lblNewLabel);

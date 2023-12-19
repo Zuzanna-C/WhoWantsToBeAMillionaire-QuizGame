@@ -17,7 +17,6 @@ import javax.swing.ImageIcon;
 public class EndView {
 	// LAYOUT
 	private JFrame frame;
-	private JLabel background;
 	// AWARD
 	private String award;
 	// QUESTIONS
@@ -34,6 +33,7 @@ public class EndView {
 
 	private void initialize() {
 		frame = new JFrame();
+		frame.setResizable(false);
 		frame.setIconImage(
 				Toolkit.getDefaultToolkit().getImage(".\\resources\\millioners.png"));
 		frame.setBounds(100, 100, 381, 223);
@@ -44,49 +44,49 @@ public class EndView {
 		frame.setLocation(screenSize.width / 2 - frame.getSize().width / 2,
 				screenSize.height / 2 - frame.getSize().height / 2);
 
-		JLabel lblNewLabel = new JLabel("Congratulation!");
-		lblNewLabel.setForeground(new Color(176, 224, 230));
-		lblNewLabel.setFont(new Font("Source Serif Pro", Font.PLAIN, 20));
-		lblNewLabel.setBounds(109, 12, 152, 40);
-		frame.getContentPane().add(lblNewLabel);
+		JLabel lCongratulation = new JLabel("Congratulation!");
+		lCongratulation.setForeground(new Color(176, 224, 230));
+		lCongratulation.setFont(new Font("Source Serif Pro", Font.PLAIN, 20));
+		lCongratulation.setBounds(109, 12, 152, 40);
+		frame.getContentPane().add(lCongratulation);
 
-		JLabel lblNewLabel_1 = new JLabel("You won " + award);
-		lblNewLabel_1.setForeground(new Color(240, 255, 255));
-		lblNewLabel_1.setFont(new Font("Source Serif Pro", Font.PLAIN, 12));
-		lblNewLabel_1.setBounds(119, 62, 135, 22);
-		frame.getContentPane().add(lblNewLabel_1);
+		JLabel lText = new JLabel("You won " + award);
+		lText.setForeground(new Color(240, 255, 255));
+		lText.setFont(new Font("Source Serif Pro", Font.PLAIN, 12));
+		lText.setBounds(119, 62, 135, 22);
+		frame.getContentPane().add(lText);
 
-		JButton btnNewButton = new JButton("Play again");
-		btnNewButton.addActionListener(new ActionListener() {
+		JButton bPlayAgain = new JButton("Play again");
+		bPlayAgain.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				new Thread(() -> new GameView(questionsBackup, categoryBackup).start()).start();
 				frame.dispose();
 			}
 		});
-		btnNewButton.setBackground(new Color(255, 255, 255));
-		btnNewButton.setFont(new Font("Source Serif Pro", Font.PLAIN, 12));
-		btnNewButton.setBounds(50, 124, 100, 30);
-		frame.getContentPane().add(btnNewButton);
-		btnNewButton.setFocusPainted(false);
+		bPlayAgain.setBackground(new Color(255, 255, 255));
+		bPlayAgain.setFont(new Font("Source Serif Pro", Font.PLAIN, 12));
+		bPlayAgain.setBounds(50, 124, 100, 30);
+		frame.getContentPane().add(bPlayAgain);
+		bPlayAgain.setFocusPainted(false);
 
-		JButton btnNewButton_1 = new JButton("Menu");
-		btnNewButton_1.setBackground(new Color(255, 255, 255));
-		btnNewButton_1.setFont(new Font("Source Serif Pro", Font.PLAIN, 12));
-		btnNewButton_1.addActionListener(new ActionListener() {
+		JButton bMEnu = new JButton("Menu");
+		bMEnu.setBackground(new Color(255, 255, 255));
+		bMEnu.setFont(new Font("Source Serif Pro", Font.PLAIN, 12));
+		bMEnu.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				StartingPageView form = new StartingPageView(questionsBackup, categoryBackup);
 				form.setVisible(true);
 				frame.dispose();
 			}
 		});
-		btnNewButton_1.setBounds(204, 124, 100, 30);
-		frame.getContentPane().add(btnNewButton_1);
-		btnNewButton_1.setFocusPainted(false);
+		bMEnu.setBounds(204, 124, 100, 30);
+		frame.getContentPane().add(bMEnu);
+		bMEnu.setFocusPainted(false);
 
-		JLabel lblNewLabel_2 = new JLabel("New label");
-		lblNewLabel_2.setIcon(new ImageIcon(".\\resources\\background.jpg"));
-		lblNewLabel_2.setBounds(0, 0, 367, 186);
-		frame.getContentPane().add(lblNewLabel_2);
+		JLabel lBackgorund = new JLabel("");
+		lBackgorund.setIcon(new ImageIcon(".\\resources\\background.png"));
+		lBackgorund.setBounds(0, 0, 367, 186);
+		frame.getContentPane().add(lBackgorund);
 	}
 
 	public void setVisible(boolean visible) {

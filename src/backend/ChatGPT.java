@@ -20,7 +20,7 @@ public class ChatGPT {
 
 	private static Logger logger = LogManager.getLogger(ChatGPT.class.getName());
 	private static final String chatgpt_url = "https://api.openai.com/v1/chat/completions";
-	private static final String apiKey = "apikey";
+	private static final String apiKey = "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";
 	private static final String chatgpt_model = "gpt-3.5-turbo";
 
 	public static QuestionModel getQuestion(String category) throws Exception {
