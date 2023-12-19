@@ -13,7 +13,8 @@ import datatypes.QuestionModel;
 
 public class SaveGame {
 	
-	public static void saveToProperties(String[] category, int playerScore, int whichQuestion) {
+	public static void saveToProperties(String[] category, int playerScore, int whichQuestion, int publicty,
+			int fiftyFifty, int change) {
         Properties properties = new Properties();
 
         for (int i = 0; i < category.length; i++) {
@@ -25,6 +26,9 @@ public class SaveGame {
         
         properties.setProperty("playerScore", Integer.toString(playerScore));
         properties.setProperty("whichQuestion", Integer.toString(whichQuestion));
+        properties.setProperty("publicityFlag", Integer.toString(publicty));
+        properties.setProperty("fiftyFiftyFlag", Integer.toString(fiftyFifty));
+        properties.setProperty("changeFlag", Integer.toString(change));
         
         try (FileOutputStream output = new FileOutputStream("settings.properties")) {
             properties.store(output, null);
@@ -53,10 +57,16 @@ public class SaveGame {
 
         int playerScore = Integer.parseInt(properties.getProperty("playerScore", "0"));
         int whichQuestion = Integer.parseInt(properties.getProperty("whichQuestion", "0"));
+        int publicityFlas = Integer.parseInt(properties.getProperty("publicityFlag", "0"));
+        int changeFlag = Integer.parseInt(properties.getProperty("fiftyFiftyFlag", "0"));
+        int fiftyFiftyFlag = Integer.parseInt(properties.getProperty("changeFlag", "0"));
 
         settings.put("categories", categories);
         settings.put("playerScore", playerScore);
         settings.put("whichQuestion", whichQuestion);
+        settings.put("publicityFlag", publicityFlas);
+        settings.put("fiftyFiftyFlag", fiftyFiftyFlag);
+        settings.put("changeFlag", changeFlag);
 
         return settings;
     }

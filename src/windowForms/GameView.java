@@ -46,6 +46,10 @@ public class GameView {
 	private int playerScore = 0;
 	private int correctAnswer = 0;
 	private int questionNumber = 0;
+	private int publicityUsage = 0; //0 - not used; 1 - used
+	private int fiftyFiftyUsage = 0;
+	private int changeUsage = 0;
+	
 	// QUESTIONS
 	private QuestionDatabase questions;
 	private String[] category;
@@ -228,7 +232,7 @@ public class GameView {
 		JButton bSave = new JButton("Save game");
 		bSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {	
-				SaveGame.saveToProperties(category, playerScore, questionNumber);
+				SaveGame.saveToProperties(category, playerScore, questionNumber, publicityUsage, fiftyFiftyUsage, changeUsage);
 			}
 		});
 		bSave.setFont(new Font("Source Serif Pro", Font.PLAIN, 12));
@@ -255,6 +259,7 @@ public class GameView {
 				fiftyFifty();
 				setImage(b5050, "5050Used");
 				setButtonUnclickable(b5050);
+				fiftyFiftyUsage = 1;
 			}
 		});
 		b5050.setBackground(Color.LIGHT_GRAY);
@@ -272,6 +277,7 @@ public class GameView {
 				new Thread(()->Update()).start();
 				setImage(bChangeQuestion, "switchUsed");
 				setButtonUnclickable(bChangeQuestion);
+				changeUsage = 1;
 			}
 		});
 		bChangeQuestion.setBackground(Color.LIGHT_GRAY);
@@ -283,12 +289,16 @@ public class GameView {
 		bPublicity.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				System.out.print(b5050.getActionListeners().length == 0);
-				if (b5050.getActionListeners().length == 0)
+				if (b5050.getActionListeners().length == 0) {
+					publicityUsage = 1;
 					AudienceHelpPlot.createPlot2Answers(questions.getQuestionModel(playerScore).getAnswerIndexFlags());
-				else
+				}
+				else {
 					AudienceHelpPlot.createPlot4Answers(questions.getQuestionModel(playerScore).getAnswerIndexFlags());
-				setImage(bPublicity, "publicityUsed");
-				setButtonUnclickable(bPublicity);
+					setImage(bPublicity, "publicityUsed");
+					setButtonUnclickable(bPublicity);
+					publicityUsage = 1;
+				}				
 			}
 		});
 		bChangeQuestion.setFocusPainted(false);
