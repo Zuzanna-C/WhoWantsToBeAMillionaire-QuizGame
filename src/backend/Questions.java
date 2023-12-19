@@ -1,7 +1,6 @@
 package backend;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,7 +10,7 @@ import datatypes.QuestionDatabase;
 public class Questions {
 	// LOGGER
 	private static Logger logger = LogManager.getLogger(Questions.class.getName());
-	private static int threadNumber = (Runtime.getRuntime().availableProcessors() > 1 ? Runtime.getRuntime().availableProcessors() - 1 : 1);
+	//(Runtime.getRuntime().availableProcessors() > 1 ? Runtime.getRuntime().availableProcessors() - 1 : 1);
 	public static int sleepTime = 8000;
 
 	public static void getQuestion(int questionNumber, QuestionDatabase questionDatabase, String[] category) {
@@ -37,24 +36,20 @@ public class Questions {
 		}
 	}
 
-	public static void getQuestions(QuestionDatabase questions, String[] category) {
-		ExecutorService pool = Executors.newFixedThreadPool(threadNumber);
+	public static void getQuestions(QuestionDatabase questions, String[] category, ExecutorService pool) {
 		for (int questionNumber = 0; questionNumber < 13; questionNumber++) {
 			int questionNumberF = questionNumber;
 			pool.submit(() -> getQuestion(questionNumberF, questions, category));
 		}
-		pool.shutdown();
 	}
 	
-	public static void getMissingQuestions(QuestionDatabase questions, String[] category)  {
-		ExecutorService pool = Executors.newFixedThreadPool(threadNumber);
+	public static void getMissingQuestions(QuestionDatabase questions, String[] category, ExecutorService pool)  {
 		for (int questionNumber = 0; questionNumber < questions.size(); questionNumber++) {
 			if (questions.getQuestionModel(questionNumber) == null || questions.getQuestionModel(questionNumber).isNull()) {
 				int questionNumberF = questionNumber;
 				pool.submit(() -> getQuestion(questionNumberF, questions, category));
 			}
 		}
-		pool.shutdown();
 	}
 
 	public static boolean isQuestionsOK(QuestionDatabase questions) {

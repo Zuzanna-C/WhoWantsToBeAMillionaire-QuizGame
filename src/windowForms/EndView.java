@@ -8,6 +8,7 @@ import datatypes.QuestionDatabase;
 import java.awt.Font;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.util.concurrent.ExecutorService;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -22,11 +23,14 @@ public class EndView {
 	// QUESTIONS
 	private QuestionDatabase questionsBackup;	
 	private String[] categoryBackup;
+	// THREAD
+	private ExecutorService exeSerPoolPrevious;
 
-	public EndView(String award, QuestionDatabase questionsBackup, String[] categoryBackup) {
+	public EndView(String award, QuestionDatabase questionsBackup, String[] categoryBackup, ExecutorService exeSerPool) {
 		this.award = award;
 		this.questionsBackup = questionsBackup;
 		this.categoryBackup = categoryBackup;
+		this.exeSerPoolPrevious = exeSerPool;
 		// INITIALIZE
 		initialize();
 	}
@@ -59,7 +63,7 @@ public class EndView {
 		JButton bPlayAgain = new JButton("Play again");
 		bPlayAgain.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new Thread(() -> new GameView(questionsBackup, categoryBackup).start()).start();
+				new Thread(() -> new GameView(questionsBackup, categoryBackup, exeSerPoolPrevious).start()).start();
 				frame.dispose();
 			}
 		});
@@ -74,6 +78,7 @@ public class EndView {
 		bMEnu.setFont(new Font("Source Serif Pro", Font.PLAIN, 12));
 		bMEnu.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				exeSerPoolPrevious.shutdown(); // Jedyna opcja na duplikaję Threads
 				StartingPageView form = new StartingPageView(questionsBackup, categoryBackup);
 				form.setVisible(true);
 				frame.dispose();

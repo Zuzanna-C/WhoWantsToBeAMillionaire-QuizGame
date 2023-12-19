@@ -3,6 +3,8 @@ package windowForms;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import java.awt.Toolkit;
+import java.util.concurrent.ExecutorService;
+
 import javax.swing.JLabel;
 
 import backend.Questions;
@@ -19,11 +21,24 @@ public class Loading {
 	private QuestionDatabase questions;
 	private String[] category;
 	private int questionNumber;
+	private Object[] data;
+	private ExecutorService exeSerPoolSupper;
 
-	public Loading(int questionNumber, QuestionDatabase questions, String[] category) {
+	public Loading(int questionNumber, QuestionDatabase questions, String[] category, ExecutorService exeSerPool) {
 		this.questionNumber = questionNumber;
 		this.questions = questions;
 		this.category = category;
+		this.exeSerPoolSupper = exeSerPool;
+		initialize();
+		frmLoading.setVisible(true);
+	}
+	
+	public Loading(int questionNumber, QuestionDatabase questions, String[] category, ExecutorService exeSerPool, Object[] data) {
+		this.questionNumber = questionNumber;
+		this.questions = questions;
+		this.category = category;
+		this.exeSerPoolSupper = exeSerPool;
+		this.data = data;
 		initialize();
 		frmLoading.setVisible(true);
 	}
@@ -60,7 +75,7 @@ public class Loading {
 	}
 	
 	public boolean isLoad() {
-		Questions.getMissingQuestions(questions, category);
+		exeSerPoolSupper.submit(() -> Questions.getMissingQuestions(questions, category, exeSerPoolSupper));
 		long time_start = System.currentTimeMillis();
 		while (System.currentTimeMillis() - time_start < 4*Questions.sleepTime) {
 			if (questions.getQuestionModel(this.questionNumber) != null) {
@@ -71,7 +86,8 @@ public class Loading {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {}
 		}
-		new LoadingWithProblems("Serwis obecnie niedostępny");
+		exeSerPoolSupper.shutdownNow();
+		new LoadingWithProblems("Serwis obecnie niedostępny", data);
 		frmLoading.dispose();
 		return false;
 	}

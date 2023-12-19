@@ -8,12 +8,15 @@ import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.JButton;
 
 import backend.Questions;
+import backend.SaveGame;
 import datatypes.QuestionCategory;
 import datatypes.QuestionDatabase;
 
@@ -21,9 +24,12 @@ public class LoadingWithProblems {
 
 	private JFrame frame;
 	private String probemMessages;
+	private Object[] data;
+	private boolean reloadF = false;
 
-	public LoadingWithProblems(String probemMessages) {
+	public LoadingWithProblems(String probemMessages, Object[] data) {
 		this.probemMessages = probemMessages;
+		this.data = data;
 		initialize();
 	}
 
@@ -52,40 +58,61 @@ public class LoadingWithProblems {
 		lPleaseWait.setBounds(50, 50, 216, 20);
 		frame.getContentPane().add(lPleaseWait);
 		
-		JButton button = new JButton("Reload App");
-		button.addActionListener(new ActionListener() {
+		JButton bSave = new JButton("Save ypur progres");
+		bSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String[] c = QuestionCategory.getQuestionCategory(13);
-				QuestionDatabase q = new QuestionDatabase();
-				Questions.getQuestions(q, c);
-				long ct = System.currentTimeMillis();
-				while (System.currentTimeMillis() - ct < 4*Questions.sleepTime) {
-					if (q.getQuestionModel(0) != null) {
-						StartingPageView st = new StartingPageView(q, c);
-						st.setVisible(true);
-						frame.dispose();
-						break;
-					}
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException ex) {}
+				try {
+					SaveGame.saveToProperties((String[]) data[0], (int) data[1], (int) data[2], (int) data[3], (int) data[4], (int) data[5]);
+					lPleaseWait.setText("Your progress - saved");
+					bSave.setEnabled(false);
+				} catch (Exception e2) {
+					lPleaseWait.setText("Cannot save ended Game");
+					bSave.setEnabled(false);
 				}
-				lPleaseWait.setText("Reload App - Faild");
-				button.setVisible(false);
 			}
 		});
-		button.setFont(new Font("Source Serif Pro", Font.PLAIN, 12));
-		button.setBackground(new Color(255, 255, 255));
-		button.setBounds(144, 114, 101, 28);
-		frame.getContentPane().add(button);
-		button.setFocusPainted(false);
+		bSave.setFont(new Font("Source Serif Pro", Font.PLAIN, 12));
+		bSave.setFocusPainted(false);
+		bSave.setBackground(Color.WHITE);
+		bSave.setBounds(34, 114, 101, 28);
+		frame.getContentPane().add(bSave);
 		
-		JButton bClose = new JButton("Reload App");
-		bClose.setFont(new Font("Source Serif Pro", Font.PLAIN, 12));
-		bClose.setFocusPainted(false);
-		bClose.setBackground(Color.WHITE);
-		bClose.setBounds(34, 114, 101, 28);
-		frame.getContentPane().add(bClose);
+		JButton ReloadClose = new JButton("Reload App");
+		ReloadClose.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (reloadF) System.exit(0);
+				new Thread(() -> {
+					lPleaseWait.setText("Loading");
+					ReloadClose.setEnabled(false);
+					String[] c = QuestionCategory.getQuestionCategory(13);
+					QuestionDatabase q = new QuestionDatabase();
+					ExecutorService exeSerPool = Executors.newFixedThreadPool(1);
+					Questions.getQuestions(q, c, exeSerPool);
+					exeSerPool.shutdown();
+					long ct = System.currentTimeMillis();
+					while (System.currentTimeMillis() - ct < 4*Questions.sleepTime) {
+						if (q.getQuestionModel(0) != null) {
+							StartingPageView st = new StartingPageView(q, c);
+							st.setVisible(true);
+							frame.dispose();
+							break;
+						}
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException ex) {}
+					}
+					lPleaseWait.setText("Reload App - Faild");
+					ReloadClose.setEnabled(true);
+					ReloadClose.setText("Close");
+					reloadF = true;
+				}).start();
+			}
+		});
+		ReloadClose.setFont(new Font("Source Serif Pro", Font.PLAIN, 12));
+		ReloadClose.setBackground(new Color(255, 255, 255));
+		ReloadClose.setBounds(144, 114, 101, 28);
+		frame.getContentPane().add(ReloadClose);
+		ReloadClose.setFocusPainted(false);
 		
 		JLabel lBackground = new JLabel("");
 		lBackground.setIcon(new ImageIcon(".\\resources\\background.png"));

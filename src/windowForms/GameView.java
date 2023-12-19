@@ -2,6 +2,8 @@ package windowForms;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.awt.Image;
 
 import javax.swing.JFrame;
@@ -42,59 +44,65 @@ public class GameView {
 	private JButton bB = new JButton("B:");
 	private JButton bC = new JButton("C:");
 	private JButton bD = new JButton("D:");
+	private JButton b5050 = new JButton("");
+	private JButton bChangeQuestion = new JButton("");
+	private JButton bPublicity = new JButton("");
 	// GAME
 	private int playerScore = 0;
 	private int correctAnswer = 0;
 	private int questionNumber = 0;
-	private int publicityUsage = 0; //0 - not used; 1 - used
+	private int publicityUsage = 0; // 0 - not used; 1 - used
 	private int fiftyFiftyUsage = 0;
 	private int changeUsage = 0;
-	
 	// QUESTIONS
 	private QuestionDatabase questions;
 	private String[] category;
 	private QuestionDatabase questionsBackup;
 	private String[] categoryBackup;
+	// THREAD
+	private ExecutorService exeSerPool = Executors.newFixedThreadPool(5);
+	private ExecutorService exeSerPoolPrevious;
 
-	
-
-	public GameView(QuestionDatabase questionsBackup, String[] categoryBackup) {
+	public GameView(QuestionDatabase questionsBackup, String[] categoryBackup, ExecutorService exeSerPool) {
 		this.questions = questionsBackup;
 		this.category = categoryBackup;
+		this.exeSerPoolPrevious = exeSerPool;
 		// SETUP
 		this.questionsBackup = new QuestionDatabase();
 		this.categoryBackup = QuestionCategory.getQuestionCategory(13);
 		// THREAD
-		Questions.getQuestions(this.questionsBackup, this.categoryBackup);
+		this.exeSerPool.submit(() -> Questions.getQuestions(this.questionsBackup, this.categoryBackup, this.exeSerPool));
 		// INITIALIZE
 		initialize();
 	}
 
-	/**
-	 * @wbp.parser.constructor
-	 */
 	public GameView(QuestionDatabase questions, QuestionDatabase questionsBackup, String[] category,
-			String[] categoryBackup) {
+			String[] categoryBackup, ExecutorService exeSerPool) {
 		this.questions = questions;
 		this.questionsBackup = questionsBackup;
 		this.category = category;
 		this.categoryBackup = categoryBackup;
+		this.exeSerPoolPrevious = exeSerPool;
 		// INITIALIZE
 		initialize();
 	}
-	
-	public GameView(QuestionDatabase questions, QuestionDatabase questionsBackup, String[] category, String[] categoryBackup,
-			int playerScore, int questionNumber) {
+
+	public GameView(QuestionDatabase questions, QuestionDatabase questionsBackup, String[] category,
+			String[] categoryBackup, ExecutorService exeSerPool, int playerScore, int questionNumber,
+			int changeFlag, int fiftyFiftyFlag, int publicityFlag) {
 		this.questions = questions;
 		this.questionsBackup = questionsBackup;
 		this.category = category;
 		this.categoryBackup = categoryBackup;
-		this.playerScore = playerScore;
+		this.exeSerPoolPrevious = exeSerPool;
 		this.questionNumber = questionNumber;
+		this.playerScore = playerScore;
+		this.fiftyFiftyUsage = fiftyFiftyFlag;
+		this.publicityUsage = publicityFlag;
+		this.changeUsage = changeFlag;
 		// INITIALIZE
 		initialize();
-
-		correctAnswer = showQuestion(this.questions, questionNumber, bA, bB, bC, bD, lQuestion);
+		gameViewUpdate();
 	}
 
 	public void start() {
@@ -104,27 +112,47 @@ public class GameView {
 			frame.setVisible(true);
 		} catch (NullPointerException e) {
 			logger.fatal("NO QUESTION: " + questionNumber);
-			if (new Loading(questionNumber, questions, category).isLoad()) {
+			exeSerPoolPrevious.shutdownNow();
+			if (new Loading(questionNumber, questions, category, exeSerPool).isLoad()) {
+				correctAnswer = showQuestion(questions, questionNumber, bA, bB, bC, bD, lQuestion);
 				frame.setVisible(true);
-				Update();
 			}
 		}
 	}
 
 	private void Update() {
+		Object[] data = {category, playerScore, questionNumber, publicityUsage, fiftyFiftyUsage, changeUsage};
 		frame.setEnabled(false);
 		try {
 			correctAnswer = showQuestion(questions, questionNumber, bA, bB, bC, bD, lQuestion);
 			frame.setEnabled(true);
 		} catch (NullPointerException e) {
 			logger.fatal("NO QUESTION: " + questionNumber);
-			if (new Loading(questionNumber, questions, category).isLoad()) {
+			exeSerPoolPrevious.shutdownNow();
+			if (new Loading(questionNumber, questions, category, exeSerPool, data).isLoad()) {
+				correctAnswer = showQuestion(questions, questionNumber, bA, bB, bC, bD, lQuestion);
 				frame.setEnabled(true);
-				Update();
 			}
 		}
 	}
-	
+
+	private void gameViewUpdate() {
+		if (changeUsage == 1) {
+			setImage(bChangeQuestion, "switchUsed");
+			setButtonUnclickable(bChangeQuestion);
+		} 
+		if (fiftyFiftyUsage == 1) {
+			setImage(b5050, "5050Used");
+			setButtonUnclickable(b5050);
+		}
+		if (publicityUsage == 1) {
+			setImage(bPublicity, "publicityUsed");
+			setButtonUnclickable(bPublicity);
+		}
+		for (int i = 0; i < questionNumber; i++) {
+			new ChangingColors().changeLabelColorGreen(labels[i]);
+		}
+	}
 	private void initialize() {
 		frame = new JFrame();
 		frame.setResizable(false);
@@ -228,11 +256,12 @@ public class GameView {
 		labels[9] = l10;
 		labels[10] = l11;
 		labels[11] = l12;
-		
+
 		JButton bSave = new JButton("Save game");
 		bSave.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {	
-				SaveGame.saveToProperties(category, playerScore, questionNumber, publicityUsage, fiftyFiftyUsage, changeUsage);
+			public void actionPerformed(ActionEvent e) {
+				SaveGame.saveToProperties(category, playerScore, questionNumber, publicityUsage, fiftyFiftyUsage,
+						changeUsage);
 			}
 		});
 		bSave.setFont(new Font("Source Serif Pro", Font.PLAIN, 12));
@@ -240,11 +269,11 @@ public class GameView {
 		bSave.setBackground(Color.WHITE);
 		bSave.setBounds(29, 40, 89, 23);
 		frame.getContentPane().add(bSave);
-		
+
 		JButton bResign = new JButton("Resign");
 		bResign.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				resign(frame, labels, questionNumber, questionsBackup, categoryBackup);
+				resign(frame, labels, questionNumber, questionsBackup, categoryBackup, exeSerPool);
 			}
 		});
 		bResign.setBounds(29, 10, 89, 23);
@@ -253,7 +282,6 @@ public class GameView {
 		bResign.setFocusPainted(false);
 		frame.getContentPane().add(bResign);
 
-		JButton b5050 = new JButton("");
 		b5050.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				fiftyFifty();
@@ -270,11 +298,10 @@ public class GameView {
 		b5050.repaint();
 		b5050.setFocusPainted(false);
 
-		JButton bChangeQuestion = new JButton("");
 		bChangeQuestion.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				questionNumber++;
-				new Thread(()->Update()).start();
+				new Thread(() -> Update()).start();
 				setImage(bChangeQuestion, "switchUsed");
 				setButtonUnclickable(bChangeQuestion);
 				changeUsage = 1;
@@ -285,20 +312,18 @@ public class GameView {
 		setImage(bChangeQuestion, "switch");
 		frame.getContentPane().add(bChangeQuestion);
 
-		JButton bPublicity = new JButton("");
 		bPublicity.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				System.out.print(b5050.getActionListeners().length == 0);
 				if (b5050.getActionListeners().length == 0) {
 					publicityUsage = 1;
 					AudienceHelpPlot.createPlot2Answers(questions.getQuestionModel(playerScore).getAnswerIndexFlags());
-				}
-				else {
+				} else {
 					AudienceHelpPlot.createPlot4Answers(questions.getQuestionModel(playerScore).getAnswerIndexFlags());
 					setImage(bPublicity, "publicityUsed");
 					setButtonUnclickable(bPublicity);
 					publicityUsage = 1;
-				}				
+				}
 			}
 		});
 		bChangeQuestion.setFocusPainted(false);
@@ -323,7 +348,7 @@ public class GameView {
 						badAnswer(frame, labels, questionNumber, questionsBackup, categoryBackup);
 						return;
 					}
-					new Thread(()->Update()).start();
+					new Thread(() -> Update()).start();
 				} else {
 					coloring.changeLabelColorRed(labels[playerScore]);
 					labels[playerScore].repaint();
@@ -354,7 +379,7 @@ public class GameView {
 						badAnswer(frame, labels, questionNumber, questionsBackup, categoryBackup);
 						return;
 					}
-					new Thread(()->Update()).start();
+					new Thread(() -> Update()).start();
 				} else {
 					coloring.changeLabelColorRed(labels[playerScore]);
 					labels[playerScore].repaint();
@@ -385,7 +410,7 @@ public class GameView {
 						badAnswer(frame, labels, questionNumber, questionsBackup, categoryBackup);
 						return;
 					}
-					new Thread(()->Update()).start();
+					new Thread(() -> Update()).start();
 				} else {
 					coloring.changeLabelColorRed(labels[playerScore]);
 					labels[playerScore].repaint();
@@ -416,7 +441,7 @@ public class GameView {
 						badAnswer(frame, labels, questionNumber, questionsBackup, categoryBackup);
 						return;
 					}
-					new Thread(()->Update()).start();
+					new Thread(() -> Update()).start();
 				} else {
 					coloring.changeLabelColorRed(labels[playerScore]);
 					labels[playerScore].repaint();
@@ -546,21 +571,21 @@ public class GameView {
 			break;
 		}
 
-		EndView form = new EndView(extractedAward, questionsBackup, categoryBackup);
+		EndView form = new EndView(extractedAward, questionsBackup, categoryBackup, exeSerPool);
 		form.setVisible(true);
 		frame.dispose();
 	}
-	
-	private static void resign(JFrame frame, JLabel[] label, int playerScore, QuestionDatabase questionsBackup, String[] categoryBackup){		
+
+	private static void resign(JFrame frame, JLabel[] label, int playerScore, QuestionDatabase questionsBackup,
+			String[] categoryBackup, ExecutorService exeSerPool) {
 		String extractedAward;
 		if (playerScore == 0) {
-			extractedAward =  "0 zł";
-		}
-		else {
+			extractedAward = "0 zł";
+		} else {
 			extractedAward = getAward(label[playerScore - 1]);
-		}		
-			
-		EndView form = new EndView(extractedAward, questionsBackup, categoryBackup);
+		}
+
+		EndView form = new EndView(extractedAward, questionsBackup, categoryBackup, exeSerPool);
 		form.setVisible(true);
 		frame.dispose();
 	}

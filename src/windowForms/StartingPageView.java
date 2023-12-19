@@ -15,6 +15,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
@@ -30,6 +32,8 @@ public class StartingPageView {
 	private String[] category;
 	private QuestionDatabase questionsBackup;
 	private String[] categoryBackup;
+	// THREAD
+	private ExecutorService exeSerPool = Executors.newFixedThreadPool(5);
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -51,8 +55,8 @@ public class StartingPageView {
 		this.questionsBackup = new QuestionDatabase();
 		this.categoryBackup = QuestionCategory.getQuestionCategory(13);
 		// THREAD
-		Questions.getQuestions(this.questions, this.category);
-		Questions.getQuestions(this.questionsBackup, this.categoryBackup);
+		exeSerPool.submit(() -> Questions.getQuestions(this.questions, this.category, exeSerPool));
+		exeSerPool.submit(() -> Questions.getQuestions(this.questionsBackup, this.categoryBackup, exeSerPool));
 		// INITIALIZE
 		initialize();
 	}
@@ -64,7 +68,7 @@ public class StartingPageView {
 		this.questionsBackup = new QuestionDatabase();
 		this.categoryBackup = QuestionCategory.getQuestionCategory(13);
 		// THREAD
-		Questions.getQuestions(this.questionsBackup, this.categoryBackup);
+		exeSerPool.submit(() -> Questions.getQuestions(this.questionsBackup, this.categoryBackup, exeSerPool));
 		// INITIALIZE
 		initialize();
 	}
@@ -92,7 +96,11 @@ public class StartingPageView {
 			public void actionPerformed(ActionEvent e) {			
 				int playerScore = 0;
 				int questionNumber = 0;
-				String FILE_PATH = "settings.properties";
+				int changeFlag = 0;
+				int fiftyFiftyFlag = 0;
+				int publicityFlag = 0;
+				final String FILE_PATH = "settings.properties";
+				ExecutorService exeSer = Executors.newFixedThreadPool(4);
 				
 				try (FileInputStream input = new FileInputStream(FILE_PATH)) {
 		            Properties properties = new Properties();
@@ -105,20 +113,26 @@ public class StartingPageView {
 
 						//KATEGORIE POBRANE Z PLIKU
 						//TRZEBA POBRAC PYTANIA NA ICH PODSTAWIE I PO PROSTU PRZYPISAĆ DO questions
-						String[] categories = (String[]) settings.get("categories");
+						category = (String[]) settings.get("categories");
 						playerScore = (int) settings.get("playerScore");
 						questionNumber = (int) settings.get("whichQuestion");
+						changeFlag = (int) settings.get("changeFlag");
+						fiftyFiftyFlag = (int) settings.get("fiftyFiftyFlag");
+						publicityFlag = (int) settings.get("publicityFlag");
+						exeSerPool.shutdownNow();
+						exeSerPool = exeSer;
+						exeSerPool.submit(() -> Questions.getQuestions(questions, category, exeSerPool));
 		            }
 
 		        } catch (IOException e1) {
 		            e1.printStackTrace();
 		        }
-				
-							
-			
-				GameView newGame = new GameView(questions, questionsBackup, category, categoryBackup,
-						playerScore, questionNumber);
-				newGame.setVisible(true);
+				final int changeFlagF = changeFlag;
+				final int fiftyFiftyFlagF = fiftyFiftyFlag;
+				final int publicityFlagF = publicityFlag;		
+				final int playerScoreF = playerScore; 
+				final int questionNumberF = questionNumber;
+				new Thread(() -> new GameView(questions, questionsBackup, category, categoryBackup, exeSer, playerScoreF, questionNumberF, changeFlagF, fiftyFiftyFlagF, publicityFlagF).start()).start();
 				frame.dispose();
 			}
 		});
@@ -132,7 +146,7 @@ public class StartingPageView {
 		bNewGame.setFont(new Font("Source Serif Pro", Font.PLAIN, 12));
 		bNewGame.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new Thread(() -> new GameView(questions, questionsBackup, category, categoryBackup).start()).start();
+				new Thread(() -> new GameView(questions, questionsBackup, category, categoryBackup, exeSerPool).start()).start();
 				frame.dispose();
 			}
 		});
