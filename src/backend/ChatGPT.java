@@ -20,7 +20,7 @@ public class ChatGPT {
 
 	private static Logger logger = LogManager.getLogger(ChatGPT.class.getName());
 	private static final String chatgpt_url = "https://api.openai.com/v1/chat/completions";
-	private static final String apiKey = "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";
+	private static final String apiKey = "apikey";
 	private static final String chatgpt_model = "gpt-3.5-turbo";
 
 	public static QuestionModel getQuestion(String category) throws Exception {
@@ -29,7 +29,7 @@ public class ChatGPT {
 				+ "Pytanie powinno być trudne i dotyczyć wiedzy z kategorii " + category + ". "
 				+ "Długość pytania nie powinna przekraczać 8 słów."
 				+ "Do pytania wygeneruj krótką maks 3 słów poprawną odpowiedź i 3 też maks 3 słów błędne odpowiedzi. "
-				+ "Danie przedstaw w podanej formie: Pytanie: treść_pytania nowa linia Odp_A: treść_odpA nowa linia Odp_B: treść_odpB nowa linia Odp_C: treść_odpC nowa lina Odp_D: treść_odpD. "
+				+ "Danie przedstaw w podanej formie: Question: treść_pytania nowa linia Answer_A: treść_odpA nowa linia Answer_B: treść_odpB nowa linia Answer_C: treść_odpC nowa lina Answer_D: treść_odpD. "
 				+ "Odp_A ma zawierać poprawną odpowiedź na pytanie. "
 				+ "Dodatkowo tekst pytania i odpowiedzi podaj w języku angielskim"
 				+ "Wygeneruj tylko pytanie i odpowiedzi bez dodatkowych komentarzy lub uwag.";

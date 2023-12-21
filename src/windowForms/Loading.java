@@ -87,7 +87,7 @@ public class Loading {
 			} catch (InterruptedException e) {}
 		}
 		exeSerPoolSupper.shutdownNow();
-		new LoadingWithProblems("Serwis obecnie niedostępny", data);
+		new LoadingWithProblems("The service currently unavailable", data);
 		frmLoading.dispose();
 		return false;
 	}

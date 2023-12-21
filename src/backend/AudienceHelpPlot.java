@@ -1,7 +1,7 @@
 package backend;
 
 import java.awt.Color;
-
+import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -20,8 +20,9 @@ public class AudienceHelpPlot {
 		data.setValue(values[2], "Value", "C");
 		data.setValue(values[3], "Value", "D");
 	
-		JFreeChart chart = ChartFactory.createBarChart("Wyniki publiczności", "", "", data, PlotOrientation.VERTICAL, false, true, false);		
-		ChartFrame frame = new ChartFrame("Pytanie do publiczności", chart);
+		JFreeChart chart = ChartFactory.createBarChart("Audience results", "", "", data, PlotOrientation.VERTICAL, false, true, false);		
+		ChartFrame frame = new ChartFrame("Audience results", chart);
+		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(".\\resources\\millioners.png"));
 		frame.setBackground(Color.CYAN);
 		frame.setResizable(false);
 		frame.setSize(500,400);

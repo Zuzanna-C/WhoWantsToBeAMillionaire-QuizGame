@@ -90,7 +90,6 @@ public class StartingPageView {
 		lWelcome.setFont(new Font("Source Serif Pro", Font.PLAIN, 20));
 		lWelcome.setBounds(143, 11, 138, 29);
 		frame.getContentPane().add(lWelcome);
-
 		JButton bResume = new JButton("Resume");
 		bResume.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {			
@@ -107,7 +106,9 @@ public class StartingPageView {
 		            properties.load(input);
 
 		            if (properties.isEmpty()) {
-		                category = QuestionCategory.getQuestionCategory(13);
+		            	new Thread(() -> new GameView(questions, questionsBackup, category, categoryBackup, exeSerPool).start()).start();
+						exeSer.shutdownNow();
+		            	frame.dispose();
 		            } else {
 		            	Map<String, Object> settings = SaveGame.loadFromProperties();
 
@@ -122,18 +123,17 @@ public class StartingPageView {
 						exeSerPool.shutdownNow();
 						exeSerPool = exeSer;
 						exeSerPool.submit(() -> Questions.getQuestions(questions, category, exeSerPool));
+						final int changeFlagF = changeFlag;
+						final int fiftyFiftyFlagF = fiftyFiftyFlag;
+						final int publicityFlagF = publicityFlag;		
+						final int playerScoreF = playerScore; 
+						final int questionNumberF = questionNumber;
+						new Thread(() -> new GameView(questions, questionsBackup, category, categoryBackup, exeSer, playerScoreF, questionNumberF, changeFlagF, fiftyFiftyFlagF, publicityFlagF).start()).start();
+						frame.dispose();
 		            }
-
 		        } catch (IOException e1) {
 		            e1.printStackTrace();
 		        }
-				final int changeFlagF = changeFlag;
-				final int fiftyFiftyFlagF = fiftyFiftyFlag;
-				final int publicityFlagF = publicityFlag;		
-				final int playerScoreF = playerScore; 
-				final int questionNumberF = questionNumber;
-				new Thread(() -> new GameView(questions, questionsBackup, category, categoryBackup, exeSer, playerScoreF, questionNumberF, changeFlagF, fiftyFiftyFlagF, publicityFlagF).start()).start();
-				frame.dispose();
 			}
 		});
 		bResume.setFont(new Font("Source Serif Pro", Font.PLAIN, 12));

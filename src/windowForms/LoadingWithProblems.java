@@ -58,7 +58,7 @@ public class LoadingWithProblems {
 		lPleaseWait.setBounds(50, 50, 216, 20);
 		frame.getContentPane().add(lPleaseWait);
 		
-		JButton bSave = new JButton("Save ypur progres");
+		JButton bSave = new JButton("Save Game");
 		bSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -66,7 +66,7 @@ public class LoadingWithProblems {
 					lPleaseWait.setText("Your progress - saved");
 					bSave.setEnabled(false);
 				} catch (Exception e2) {
-					lPleaseWait.setText("Cannot save ended Game");
+					lPleaseWait.setText("Cannot save not started game");
 					bSave.setEnabled(false);
 				}
 			}
@@ -82,7 +82,7 @@ public class LoadingWithProblems {
 			public void actionPerformed(ActionEvent e) {
 				if (reloadF) System.exit(0);
 				new Thread(() -> {
-					lPleaseWait.setText("Loading");
+					lPleaseWait.setText("Trying to connect with server...");
 					ReloadClose.setEnabled(false);
 					String[] c = QuestionCategory.getQuestionCategory(13);
 					QuestionDatabase q = new QuestionDatabase();
@@ -101,7 +101,7 @@ public class LoadingWithProblems {
 							Thread.sleep(1000);
 						} catch (InterruptedException ex) {}
 					}
-					lPleaseWait.setText("Reload App - Faild");
+					lPleaseWait.setText("Reconnection - Faild");
 					ReloadClose.setEnabled(true);
 					ReloadClose.setText("Close");
 					reloadF = true;
