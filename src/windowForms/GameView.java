@@ -76,6 +76,9 @@ public class GameView {
 		initialize();
 	}
 
+	/**
+	 * @wbp.parser.constructor
+	 */
 	public GameView(QuestionDatabase questions, QuestionDatabase questionsBackup, String[] category,
 			String[] categoryBackup, ExecutorService exeSerPool) {
 		this.questions = questions;
@@ -133,6 +136,7 @@ public class GameView {
 				correctAnswer = showQuestion(questions, questionNumber, bA, bB, bC, bD, lQuestion);
 				frame.setEnabled(true);
 			}
+			frame.dispose();
 		}
 	}
 
@@ -168,7 +172,7 @@ public class GameView {
 				screenSize.height / 2 - frame.getSize().height / 2);
 
 		lQuestion.setForeground(new Color(240, 255, 255));
-		lQuestion.setFont(new Font("Source Serif Pro", Font.PLAIN, 12));
+		lQuestion.setFont(new Font("Source Serif Pro", Font.PLAIN, 16));
 		lQuestion.setBounds(29, 158, 419, 44);
 		frame.getContentPane().add(lQuestion);
 
@@ -338,6 +342,7 @@ public class GameView {
 		bA.setName("bA");
 		bA.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				activateButtons(btns);
 				ChangingColors coloring = new ChangingColors();
 
 				if (correctAnswer == 0) {
@@ -369,6 +374,7 @@ public class GameView {
 		bB.setName("bB");
 		bB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				activateButtons(btns);
 				ChangingColors coloring = new ChangingColors();
 
 				if (correctAnswer == 1) {
@@ -400,6 +406,7 @@ public class GameView {
 		bC.setName("bC");
 		bC.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				activateButtons(btns);
 				ChangingColors coloring = new ChangingColors();
 
 				if (correctAnswer == 2) {
@@ -431,6 +438,7 @@ public class GameView {
 		bD.setName("bD");
 		bD.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				activateButtons(btns);
 				ChangingColors coloring = new ChangingColors();
 
 				if (correctAnswer == 3) {
@@ -505,6 +513,9 @@ public class GameView {
 
 		btns[index1].setText("");
 		btns[index2].setText("");
+		
+		btns[index1].setEnabled(false);
+		btns[index2].setEnabled(false);
 	}
 
 	private int losujLiczbe(ArrayList<Integer> lista) {
@@ -588,5 +599,13 @@ public class GameView {
 		EndView form = new EndView(extractedAward, questionsBackup, categoryBackup, exeSerPool);
 		form.setVisible(true);
 		frame.dispose();
+	}
+	
+	private void activateButtons(JButton[] btns) {
+		for (JButton btn : btns) {
+			if (btn.isEnabled() == false) {
+				btn.setEnabled(true);
+			}
+		}
 	}
 }

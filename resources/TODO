@@ -1,18 +1,18 @@
 ZC&JK:
-LoadingWithProblems - ?
-   StartingPageView - DONE
-  		   GameView - ?
-   		    Loading - DONE
-   		    EndView - DONE
+	LoadingWithProblems - ?
+	QuestionDatabase - DONE
+	QuestionModel - DONE
+	StartingPageView - DONE
+	GameView - DONE
+	Loading - DONE
+	EndView - DONE
 
 ZC:
-ChangingColors - DONE
-SaveGame - DONE
+	ChangingColors - DONE
+	SaveGame - DONE
 
 JK:
-AudienceHelpPlot - DONE
-QuestionCategory - DONE
-QuestionDatabase - DONE
-   QuestionModel - DONE
-	   Questions - DONE
-		 ChatGPT - DONE
+	AudienceHelpPlot - DONE
+	QuestionCategory - DONE
+	Questions - DONE
+	ChatGPT - DONE

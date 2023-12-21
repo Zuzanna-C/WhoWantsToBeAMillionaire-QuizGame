@@ -20,16 +20,18 @@ public class ChatGPT {
 
 	private static Logger logger = LogManager.getLogger(ChatGPT.class.getName());
 	private static final String chatgpt_url = "https://api.openai.com/v1/chat/completions";
-	private static final String apiKey = "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";
+	private static final String apiKey = "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";
 	private static final String chatgpt_model = "gpt-3.5-turbo";
 
 	public static QuestionModel getQuestion(String category) throws Exception {
 		
 		String request = "Wygeneruj pytanie do teleturnieju Milionerzy. "
 				+ "Pytanie powinno być trudne i dotyczyć wiedzy z kategorii " + category + ". "
+				+ "Długość pytania nie powinna przekraczać 8 słów."
 				+ "Do pytania wygeneruj krótką maks 3 słów poprawną odpowiedź i 3 też maks 3 słów błędne odpowiedzi. "
 				+ "Danie przedstaw w podanej formie: Pytanie: treść_pytania nowa linia Odp_A: treść_odpA nowa linia Odp_B: treść_odpB nowa linia Odp_C: treść_odpC nowa lina Odp_D: treść_odpD. "
 				+ "Odp_A ma zawierać poprawną odpowiedź na pytanie. "
+				+ "Dodatkowo tekst pytania i odpowiedzi podaj w języku angielskim"
 				+ "Wygeneruj tylko pytanie i odpowiedzi bez dodatkowych komentarzy lub uwag.";
 		
 		try {
@@ -90,38 +92,39 @@ public class ChatGPT {
 	}
 
 	private static QuestionModel extractQuestionModelFromJSONResponse(String response) throws Exception {
-		String[] answers = new String[4];
-		String questionText = null;
-		try {
-			if (response.indexOf("nowa linia") != -1)
-				throw (new IndexOutOfBoundsException());
-			questionText = response.substring(response.indexOf("Pytanie: ") + ("Pytanie: ").length(),
-					response.indexOf("Odp_A", response.indexOf("Pytanie: ") + ("Pytanie: ").length()));
-			questionText = questionText.substring(0, questionText.length() - 2).replace("\\", "");
+	    String[] answers = new String[4];
+	    String questionText = null;
+	    try {
+	        if (response.indexOf("new line") != -1)
+	            throw new IndexOutOfBoundsException();
+	        questionText = response.substring(response.indexOf("Question: ") + ("Question: ").length(),
+	                response.indexOf("Answer_A", response.indexOf("Question: ") + ("Question: ").length()));
+	        questionText = questionText.substring(0, questionText.length() - 2).replace("\\", "");
 
-			answers[0] = response
-					.substring(response.indexOf("Odp_A: ") + "Odp_A: ".length(),
-							response.indexOf("Odp_B: ", response.indexOf("Odp_A: ") + "Odp_A: ".length()) - 2)
-					.replace("\\", ""); // 2 because \n
-			answers[1] = response
-					.substring(response.indexOf("Odp_B: ") + "Odp_B: ".length(),
-							response.indexOf("Odp_C: ", response.indexOf("Odp_B: ") + "Odp_B: ".length()) - 2)
-					.replace("\\", "");
-			answers[2] = response
-					.substring(response.indexOf("Odp_C: ") + "Odp_C: ".length(),
-							response.indexOf("Odp_D: ", response.indexOf("Odp_C: ") + "Odp_C: ".length()) - 2)
-					.replace("\\", "");
-			answers[3] = response
-					.substring(response.indexOf("Odp_D: ") + "Odp_D: ".length(),
-							response.indexOf("\"      },", response.indexOf("Odp_D: ") + "Odp_D: ".length()))
-					.replace("\\", "");
-		} catch (IndexOutOfBoundsException e) {
-			logger.error("ChatGPT response incorrect format.");
-			logger.error(e);
-			throw new Exception("ChatGPT getQuestion");
-		}
-		logger.info("Succes.");
-		return (new QuestionModel(questionText, answers)).shuffleAnswerOptions();
+	        answers[0] = response
+	                .substring(response.indexOf("Answer_A: ") + "Answer_A: ".length(),
+	                        response.indexOf("Answer_B: ", response.indexOf("Answer_A: ") + "Answer_A: ".length()) - 2)
+	                .replace("\\", ""); // 2 because \n
+	        answers[1] = response
+	                .substring(response.indexOf("Answer_B: ") + "Answer_B: ".length(),
+	                        response.indexOf("Answer_C: ", response.indexOf("Answer_B: ") + "Answer_B: ".length()) - 2)
+	                .replace("\\", "");
+	        answers[2] = response
+	                .substring(response.indexOf("Answer_C: ") + "Answer_C: ".length(),
+	                        response.indexOf("Answer_D: ", response.indexOf("Answer_C: ") + "Answer_C: ".length()) - 2)
+	                .replace("\\", "");
+	        answers[3] = response
+	                .substring(response.indexOf("Answer_D: ") + "Answer_D: ".length(),
+	                        response.indexOf("\"      },", response.indexOf("Answer_D: ") + "Answer_D: ".length()))
+	                .replace("\\", "");
+	    } catch (IndexOutOfBoundsException e) {
+	        logger.error("ChatGPT response incorrect format.");
+	        logger.error(e);
+	        throw new Exception("ChatGPT getQuestion");
+	    }
+	    logger.info("Success.");
+	    return (new QuestionModel(questionText, answers)).shuffleAnswerOptions();
 	}
+
 	
 }

@@ -8,10 +8,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import datatypes.QuestionDatabase;
 import datatypes.QuestionModel;
 
 public class SaveGame {
+	private static Logger logger = LogManager.getLogger(SaveGame.class.getName());
 	
 	public static void saveToProperties(String[] category, int playerScore, int whichQuestion, int publicty,
 			int fiftyFifty, int change) {
@@ -34,6 +38,7 @@ public class SaveGame {
             properties.store(output, null);
             System.out.println("Plik properties został pomyślnie zapisany.");
         } catch (IOException ex) {
+        	logger.error("Error occurred while saving to properties file", ex);
             ex.printStackTrace();
         }
 	}
@@ -47,6 +52,7 @@ public class SaveGame {
         try (FileInputStream input = new FileInputStream(FILE_PATH)) {
             properties.load(input);
         } catch (IOException e) {
+        	logger.error("Error occurred while loading properties file", e);
             e.printStackTrace();
         }
 
@@ -55,18 +61,23 @@ public class SaveGame {
             categories[i] = properties.getProperty("category" + i + ".categoryText", "");
         }
 
-        int playerScore = Integer.parseInt(properties.getProperty("playerScore", "0"));
-        int whichQuestion = Integer.parseInt(properties.getProperty("whichQuestion", "0"));
-        int publicityFlas = Integer.parseInt(properties.getProperty("publicityFlag", "0"));
-        int changeFlag = Integer.parseInt(properties.getProperty("fiftyFiftyFlag", "0"));
-        int fiftyFiftyFlag = Integer.parseInt(properties.getProperty("changeFlag", "0"));
+        try {
+            int playerScore = Integer.parseInt(properties.getProperty("playerScore", "0"));
+            int whichQuestion = Integer.parseInt(properties.getProperty("whichQuestion", "0"));
+            int publicityFlag = Integer.parseInt(properties.getProperty("publicityFlag", "0"));
+            int changeFlag = Integer.parseInt(properties.getProperty("fiftyFiftyFlag", "0"));
+            int fiftyFiftyFlag = Integer.parseInt(properties.getProperty("changeFlag", "0"));
 
-        settings.put("categories", categories);
-        settings.put("playerScore", playerScore);
-        settings.put("whichQuestion", whichQuestion);
-        settings.put("publicityFlag", publicityFlas);
-        settings.put("fiftyFiftyFlag", fiftyFiftyFlag);
-        settings.put("changeFlag", changeFlag);
+            settings.put("categories", categories);
+            settings.put("playerScore", playerScore);
+            settings.put("whichQuestion", whichQuestion);
+            settings.put("publicityFlag", publicityFlag);
+            settings.put("fiftyFiftyFlag", fiftyFiftyFlag);
+            settings.put("changeFlag", changeFlag);
+        } catch (NumberFormatException ex) {
+            logger.error("Error occurred while parsing properties to integers", ex);
+            ex.printStackTrace();
+        }
 
         return settings;
     }
